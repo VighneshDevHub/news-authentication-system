@@ -1,8 +1,8 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { Shield, User, Lock, ArrowRight, Loader2, AlertCircle } from 'lucide-react';
 import Navbar from '@/components/Navbar';
 import axios from 'axios';
@@ -10,7 +10,15 @@ import { useAuth } from '@/context/AuthContext';
 
 export default function SignInPage() {
   const router = useRouter();
-  const { login } = useAuth();
+  const searchParams = useSearchParams();
+  const redirect = searchParams.get('redirect');
+  const { login, isAuthenticated } = useAuth();
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      router.push(redirect || '/dashboard');
+    }
+  }, [isAuthenticated, router, redirect]);
   const [formData, setFormData] = useState({
     username: '',
     password: '',
@@ -39,7 +47,7 @@ export default function SignInPage() {
         }
       );
 
-      await login(response.data.access_token);
+      await login(response.data.access_token, redirect || undefined);
     } catch (err: any) {
       setError(err.response?.data?.detail || 'Invalid username or password');
     } finally {
@@ -54,7 +62,7 @@ export default function SignInPage() {
       <div className="flex-1 flex items-center justify-center p-4 pt-24">
         <div className="w-full max-w-md space-y-8 bg-zinc-50 dark:bg-zinc-900 p-10 rounded-3xl border border-zinc-200 dark:border-zinc-800 shadow-xl">
           <div className="text-center space-y-2">
-            <div className="inline-flex items-center justify-center p-3 bg-violet-600 rounded-2xl mb-4">
+            <div className="inline-flex items-center justify-center p-3 bg-indigo-600 rounded-2xl mb-4">
               <Shield className="w-8 h-8 text-white" />
             </div>
             <h2 className="text-3xl font-bold tracking-tight text-zinc-900 dark:text-white">Welcome back</h2>
@@ -73,7 +81,7 @@ export default function SignInPage() {
               <div className="space-y-2">
                 <label className="text-sm font-bold text-zinc-700 dark:text-zinc-300 ml-1">Username</label>
                 <div className="relative group">
-                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-zinc-400 group-focus-within:text-violet-600 transition-colors">
+                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-zinc-400 group-focus-within:text-indigo-600 transition-colors">
                     <User className="w-5 h-5" />
                   </div>
                   <input
@@ -81,7 +89,7 @@ export default function SignInPage() {
                     required
                     value={formData.username}
                     onChange={(e) => setFormData({ ...formData, username: e.target.value })}
-                    className="block w-full pl-11 pr-4 py-3.5 bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-2xl focus:ring-2 focus:ring-violet-600 focus:border-transparent outline-none transition-all placeholder:text-zinc-400 text-zinc-900 dark:text-white font-medium"
+                    className="block w-full pl-11 pr-4 py-3.5 bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-2xl focus:ring-2 focus:ring-indigo-600 focus:border-transparent outline-none transition-all placeholder:text-zinc-400 text-zinc-900 dark:text-white font-medium"
                     placeholder="yourusername"
                   />
                 </div>
@@ -90,10 +98,10 @@ export default function SignInPage() {
               <div className="space-y-2">
                 <div className="flex items-center justify-between ml-1">
                   <label className="text-sm font-bold text-zinc-700 dark:text-zinc-300">Password</label>
-                  <Link href="#" className="text-xs font-black text-violet-600 hover:text-violet-700">Forgot password?</Link>
+                  <Link href="#" className="text-xs font-black text-indigo-600 hover:text-indigo-700">Forgot password?</Link>
                 </div>
                 <div className="relative group">
-                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-zinc-400 group-focus-within:text-violet-600 transition-colors">
+                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-zinc-400 group-focus-within:text-indigo-600 transition-colors">
                     <Lock className="w-5 h-5" />
                   </div>
                   <input
@@ -101,7 +109,7 @@ export default function SignInPage() {
                     required
                     value={formData.password}
                     onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                    className="block w-full pl-11 pr-4 py-3.5 bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-2xl focus:ring-2 focus:ring-violet-600 focus:border-transparent outline-none transition-all placeholder:text-zinc-400 text-zinc-900 dark:text-white font-medium"
+                    className="block w-full pl-11 pr-4 py-3.5 bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-2xl focus:ring-2 focus:ring-indigo-600 focus:border-transparent outline-none transition-all placeholder:text-zinc-400 text-zinc-900 dark:text-white font-medium"
                     placeholder="••••••••"
                   />
                 </div>
@@ -111,7 +119,7 @@ export default function SignInPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full flex items-center justify-center gap-2 px-8 py-4 bg-violet-600 text-white font-black rounded-2xl hover:bg-violet-700 transition-all shadow-lg shadow-violet-500/25 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full flex items-center justify-center gap-2 px-8 py-4 bg-indigo-600 text-white font-black rounded-2xl hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-500/25 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? (
                 <Loader2 className="w-5 h-5 animate-spin" />
@@ -127,7 +135,7 @@ export default function SignInPage() {
           <div className="text-center pt-4">
             <p className="text-sm text-zinc-500 dark:text-zinc-400 font-medium">
               Don't have an account?{' '}
-              <Link href="/signup" className="font-black text-violet-600 hover:text-violet-700 transition-colors">
+              <Link href="/signup" className="font-black text-indigo-600 hover:text-indigo-700 transition-colors">
                 Create Account
               </Link>
             </p>

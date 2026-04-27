@@ -83,9 +83,12 @@ export default function NewsAnalyzer() {
     setIsSaved(false);
 
     try {
-      const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1'}/analysis/`, {
-        text: text
-      });
+      const token = getToken();
+      const response = await axios.post(
+        `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1'}/analysis/`, 
+        { text: text },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
       setResult(response.data);
     } catch (err: any) {
       console.error('API Error:', err);
@@ -136,7 +139,7 @@ export default function NewsAnalyzer() {
         className="bg-white dark:bg-zinc-900 p-8 rounded-[2.5rem] border border-zinc-200 dark:border-zinc-800 shadow-xl shadow-zinc-200/50 dark:shadow-none"
       >
         <div className="flex items-center gap-3 mb-6">
-          <div className="p-2.5 bg-violet-600 rounded-xl">
+          <div className="p-2.5 bg-indigo-600 rounded-xl">
             <Search className="w-5 h-5 text-white" />
           </div>
           <div>
@@ -147,7 +150,7 @@ export default function NewsAnalyzer() {
 
         <div className="relative group">
           <textarea
-            className="w-full h-48 p-6 bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-[2rem] focus:ring-4 focus:ring-violet-500/10 focus:border-violet-500 outline-none transition-all resize-none font-medium text-zinc-900 dark:text-white placeholder:text-zinc-400"
+            className="w-full h-48 p-6 bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-[2rem] focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none transition-all resize-none font-medium text-zinc-900 dark:text-white placeholder:text-zinc-400"
             placeholder="e.g., A major tech company announced a new breakthrough in quantum computing today..."
             value={text}
             onChange={(e) => setText(e.target.value)}
@@ -156,7 +159,7 @@ export default function NewsAnalyzer() {
             <button
               onClick={analyzeNews}
               disabled={loading || !text.trim()}
-              className="px-8 py-3.5 bg-violet-600 text-white font-black rounded-2xl hover:bg-violet-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg shadow-violet-500/25 flex items-center gap-2 group active:scale-95"
+              className="px-8 py-3.5 bg-indigo-600 text-white font-black rounded-2xl hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg shadow-indigo-500/25 flex items-center gap-2 group active:scale-95"
             >
               {loading ? (
                 <>
@@ -258,7 +261,7 @@ export default function NewsAnalyzer() {
                 {result.result.verdict_summary && (
                   <div className="mb-12 p-6 bg-zinc-50 dark:bg-zinc-950 rounded-3xl border border-zinc-100 dark:border-zinc-800">
                     <h4 className="text-xs font-black text-zinc-400 uppercase tracking-widest mb-3 flex items-center gap-2">
-                      <ShieldCheck className="w-4 h-4 text-violet-600" />
+                      <ShieldCheck className="w-4 h-4 text-indigo-600" />
                       Executive Verdict
                     </h4>
                     <p className="text-xl font-bold text-zinc-800 dark:text-zinc-200 leading-relaxed">
@@ -271,13 +274,13 @@ export default function NewsAnalyzer() {
                   <div className="space-y-8">
                     <div>
                       <h4 className="text-sm font-black text-zinc-400 uppercase tracking-widest mb-6 flex items-center gap-2">
-                        <CheckCircle2 className="w-4 h-4 text-violet-600" />
+                        <CheckCircle2 className="w-4 h-4 text-indigo-600" />
                         Key Findings
                       </h4>
                       <div className="space-y-4">
                         {(result.result.key_findings || []).map((finding, i) => (
-                          <div key={i} className="flex gap-4 p-5 bg-zinc-50 dark:bg-zinc-950 rounded-2xl border border-zinc-100 dark:border-zinc-800 group hover:border-violet-500/30 transition-colors">
-                            <div className="w-6 h-6 rounded-full bg-violet-600 text-white text-[10px] font-black flex items-center justify-center shrink-0 mt-0.5">
+                          <div key={i} className="flex gap-4 p-5 bg-zinc-50 dark:bg-zinc-950 rounded-2xl border border-zinc-100 dark:border-zinc-800 group hover:border-indigo-500/30 transition-colors">
+                            <div className="w-6 h-6 rounded-full bg-indigo-600 text-white text-[10px] font-black flex items-center justify-center shrink-0 mt-0.5">
                               {i + 1}
                             </div>
                             <p className="text-zinc-700 dark:text-zinc-300 font-bold leading-relaxed">{finding}</p>
@@ -377,12 +380,12 @@ export default function NewsAnalyzer() {
                       </div>
                     </div>
 
-                    <div className="p-8 bg-violet-600 rounded-3xl text-white relative overflow-hidden group">
+                    <div className="p-8 bg-indigo-600 rounded-3xl text-white relative overflow-hidden group">
                       <div className="absolute top-0 right-0 p-4 opacity-20 group-hover:scale-110 transition-transform">
                         <Zap className="w-24 h-24" />
                       </div>
                       <h4 className="text-xl font-black mb-2">Neural Insight</h4>
-                      <p className="text-violet-100 font-bold leading-relaxed mb-6">
+                      <p className="text-indigo-100 font-bold leading-relaxed mb-6">
                         Our model detected {(result.result.differences || []).length > 0 ? result.result.differences.length : 'no'} significant discrepancies in this report compared to verified historical data.
                       </p>
                       {(result.result.differences || []).length > 0 && (
@@ -412,16 +415,16 @@ export default function NewsAnalyzer() {
                     target="_blank"
                     rel="noopener noreferrer"
                     whileHover={{ y: -5 }}
-                    className="p-6 bg-white dark:bg-zinc-900 rounded-3xl border border-zinc-200 dark:border-zinc-800 hover:border-violet-500 transition-all group flex flex-col justify-between"
+                    className="p-6 bg-white dark:bg-zinc-900 rounded-3xl border border-zinc-200 dark:border-zinc-800 hover:border-indigo-500 transition-all group flex flex-col justify-between"
                   >
                     <div>
                       <div className="flex items-center justify-between mb-4">
-                        <div className="px-3 py-1 bg-zinc-100 dark:bg-zinc-800 rounded-lg text-[10px] font-black uppercase tracking-widest text-zinc-500 group-hover:text-violet-600 transition-colors">
+                        <div className="px-3 py-1 bg-zinc-100 dark:bg-zinc-800 rounded-lg text-[10px] font-black uppercase tracking-widest text-zinc-500 group-hover:text-indigo-600 transition-colors">
                           {article.source}
                         </div>
-                        <ArrowUpRight className="w-4 h-4 text-zinc-300 group-hover:text-violet-600 transition-colors" />
+                        <ArrowUpRight className="w-4 h-4 text-zinc-300 group-hover:text-indigo-600 transition-colors" />
                       </div>
-                      <h5 className="text-lg font-black text-zinc-900 dark:text-white mb-3 group-hover:text-violet-600 transition-colors leading-snug">
+                      <h5 className="text-lg font-black text-zinc-900 dark:text-white mb-3 group-hover:text-indigo-600 transition-colors leading-snug">
                         {article.title}
                       </h5>
                       <p className="text-sm text-zinc-500 font-medium line-clamp-2 leading-relaxed">

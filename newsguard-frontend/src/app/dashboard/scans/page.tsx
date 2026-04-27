@@ -14,6 +14,7 @@ import {
 import axios from 'axios';
 import { motion } from 'framer-motion';
 import { getToken } from '@/utils/auth';
+import Link from 'next/link';
 
 interface HistoryItem {
   id: number;
@@ -92,13 +93,13 @@ export default function RecentScansPage() {
             placeholder="Search scans..."
             value={filters.search}
             onChange={(e) => setFilters(prev => ({ ...prev, search: e.target.value }))}
-            className="w-full bg-zinc-50 dark:bg-zinc-800/50 border-none rounded-xl py-2 pl-10 pr-4 text-sm font-medium focus:ring-2 focus:ring-violet-600 transition-all"
+            className="w-full bg-zinc-50 dark:bg-zinc-800/50 border-none rounded-xl py-2 pl-10 pr-4 text-sm font-medium focus:ring-2 focus:ring-indigo-600 transition-all"
           />
         </div>
         <select 
           value={filters.category}
           onChange={(e) => setFilters(prev => ({ ...prev, category: e.target.value }))}
-          className="bg-zinc-50 dark:bg-zinc-800/50 border-none rounded-xl py-2 px-4 text-sm font-bold focus:ring-2 focus:ring-violet-600 transition-all cursor-pointer"
+          className="bg-zinc-50 dark:bg-zinc-800/50 border-none rounded-xl py-2 px-4 text-sm font-bold focus:ring-2 focus:ring-indigo-600 transition-all cursor-pointer"
         >
           <option value="">All Categories</option>
           {categories.map(cat => <option key={cat} value={cat}>{cat}</option>)}
@@ -111,16 +112,16 @@ export default function RecentScansPage() {
             max="100"
             value={filters.minScore}
             onChange={(e) => setFilters(prev => ({ ...prev, minScore: parseInt(e.target.value) }))}
-            className="w-24 accent-violet-600"
+            className="w-24 accent-indigo-600"
           />
-          <span className="text-sm font-black text-violet-600 min-w-[2ch]">{filters.minScore}</span>
+          <span className="text-sm font-black text-indigo-600 min-w-[2ch]">{filters.minScore}</span>
         </div>
       </div>
 
       <div className="bg-white dark:bg-zinc-900 rounded-[2.5rem] border border-zinc-200 dark:border-zinc-800 shadow-sm overflow-hidden">
         {loading && history.length === 0 ? (
           <div className="py-24 flex flex-col items-center justify-center text-zinc-400 gap-4">
-            <Loader2 className="w-10 h-10 animate-spin text-violet-600" />
+            <Loader2 className="w-10 h-10 animate-spin text-indigo-600" />
             <p className="font-black animate-pulse">Retrieving your records...</p>
           </div>
         ) : filteredHistory.length > 0 ? (
@@ -178,9 +179,12 @@ export default function RecentScansPage() {
                       </span>
                     </td>
                     <td className="px-8 py-6 text-right">
-                      <button className="p-2 text-zinc-400 hover:text-violet-600 hover:bg-violet-50 dark:hover:bg-violet-900/20 rounded-xl transition-all">
+                      <Link 
+                        href={`/dashboard/scans/${item.id}`}
+                        className="p-2 text-zinc-400 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 rounded-xl transition-all inline-block"
+                      >
                         <ArrowRight className="w-5 h-5" />
-                      </button>
+                      </Link>
                     </td>
                   </motion.tr>
                 ))}

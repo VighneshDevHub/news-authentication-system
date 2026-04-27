@@ -126,23 +126,23 @@ newsguard-frontend/
 
 ### Public Routes
 
-| Route | Component | Description |
-|-------|-----------|-------------|
-| `/` | `app/page.tsx` | Landing page with hero, features, testimonials, pricing |
-| `/signin` | `app/signin/page.tsx` | User login with email/password |
-| `/signup` | `app/signup/page.tsx` | User registration form |
+| Route     | Component             | Description                                             |
+| --------- | --------------------- | ------------------------------------------------------- |
+| `/`       | `app/page.tsx`        | Landing page with hero, features, testimonials, pricing |
+| `/signin` | `app/signin/page.tsx` | User login with email/password                          |
+| `/signup` | `app/signup/page.tsx` | User registration form                                  |
 
 ### Protected Routes (Dashboard)
 
 All routes under `/dashboard` require authentication. Unauthenticated users are redirected to `/signin`.
 
-| Route | Component | Description |
-|-------|-----------|-------------|
-| `/dashboard` | `app/dashboard/page.tsx` | Overview with stats, charts, recent activity |
-| `/dashboard/verify` | `app/dashboard/verify/page.tsx` | News verification interface (NewsAnalyzer) |
-| `/dashboard/library` | `app/dashboard/library/page.tsx` | Saved articles with search & delete |
-| `/dashboard/scans` | `app/dashboard/scans/page.tsx` | Verification history table |
-| `/dashboard/settings` | `app/dashboard/settings/page.tsx` | User profile & account settings |
+| Route                 | Component                         | Description                                  |
+| --------------------- | --------------------------------- | -------------------------------------------- |
+| `/dashboard`          | `app/dashboard/page.tsx`          | Overview with stats, charts, recent activity |
+| `/dashboard/verify`   | `app/dashboard/verify/page.tsx`   | News verification interface (NewsAnalyzer)   |
+| `/dashboard/library`  | `app/dashboard/library/page.tsx`  | Saved articles with search & delete          |
+| `/dashboard/scans`    | `app/dashboard/scans/page.tsx`    | Verification history table                   |
+| `/dashboard/settings` | `app/dashboard/settings/page.tsx` | User profile & account settings              |
 
 ---
 
@@ -153,6 +153,7 @@ All routes under `/dashboard` require authentication. Unauthenticated users are 
 **Location:** `src/components/Navbar.tsx`
 
 Responsive navigation bar with:
+
 - Logo and branding
 - Desktop menu (Features, How it Works)
 - Mobile hamburger menu
@@ -160,10 +161,11 @@ Responsive navigation bar with:
 - Smooth animations with Framer Motion
 
 **Usage:**
-```tsx
-import Navbar from '@/components/Navbar';
 
-<Navbar />
+```tsx
+import Navbar from "@/components/Navbar";
+
+<Navbar />;
 ```
 
 ---
@@ -173,6 +175,7 @@ import Navbar from '@/components/Navbar';
 **Location:** `src/components/NewsAnalyzer.tsx`
 
 The core verification component featuring:
+
 - Large textarea for news input
 - "Run Neural Scan" button with loading state
 - Animated results display with:
@@ -187,6 +190,7 @@ The core verification component featuring:
 **Props:** None (self-contained with internal state)
 
 **API Integration:**
+
 ```typescript
 POST /api/v1/analysis/
 Body: { text: string }
@@ -194,6 +198,7 @@ Response: VerificationResult
 ```
 
 **Features:**
+
 - Error handling with user-friendly messages
 - Loading states with spinners
 - Animated score reveal
@@ -207,6 +212,7 @@ Response: VerificationResult
 **Location:** `src/app/dashboard/layout.tsx`
 
 Shared layout for all dashboard pages:
+
 - Sidebar navigation (desktop)
 - Mobile drawer menu
 - User profile section
@@ -214,6 +220,7 @@ Shared layout for all dashboard pages:
 - Route highlighting
 
 **Navigation Items:**
+
 - Overview (LayoutDashboard icon)
 - Verify News (Search icon)
 - Saved Library (Bookmark icon)
@@ -228,13 +235,13 @@ Shared layout for all dashboard pages:
 
 ```css
 /* Primary */
---violet-600: #7c3aed;
+--indigo-600: #4f46e5;
 --fuchsia-600: #c026d3;
 
 /* Semantic */
---emerald-500: #10b981;  /* Success / High trust */
---amber-500: #f59e0b;    /* Warning / Medium trust */
---rose-500: #f43f5e;     /* Error / Low trust */
+--emerald-500: #10b981; /* Success / High trust */
+--amber-500: #f59e0b; /* Warning / Medium trust */
+--rose-500: #f43f5e; /* Error / Low trust */
 
 /* Neutrals */
 --zinc-50: #fafafa;
@@ -267,7 +274,7 @@ shadow-sm
 shadow-xl
 
 /* Colored glow (for CTAs) */
-shadow-lg shadow-violet-500/25
+shadow-lg shadow-indigo-500/25
 ```
 
 ---
@@ -299,7 +306,7 @@ Dashboard layout checks authentication on mount:
 ```typescript
 useEffect(() => {
   if (!isAuthenticated()) {
-    router.push('/signin');
+    router.push("/signin");
   }
 }, [router]);
 ```
@@ -308,8 +315,8 @@ useEffect(() => {
 
 ```typescript
 const token = getToken();
-const response = await axios.get('/api/v1/dashboard/stats', {
-  headers: { Authorization: `Bearer ${token}` }
+const response = await axios.get("/api/v1/dashboard/stats", {
+  headers: { Authorization: `Bearer ${token}` },
 });
 ```
 
@@ -320,6 +327,7 @@ const response = await axios.get('/api/v1/dashboard/stats', {
 ### Framer Motion Patterns
 
 **Page Transitions:**
+
 ```tsx
 <motion.div
   initial={{ opacity: 0, y: 20 }}
@@ -331,26 +339,26 @@ const response = await axios.get('/api/v1/dashboard/stats', {
 ```
 
 **Staggered Children:**
+
 ```tsx
 const container = {
   hidden: { opacity: 0 },
   show: {
     opacity: 1,
-    transition: { staggerChildren: 0.1 }
-  }
+    transition: { staggerChildren: 0.1 },
+  },
 };
 
 const item = {
   hidden: { opacity: 0, y: 20 },
-  show: { opacity: 1, y: 0 }
+  show: { opacity: 1, y: 0 },
 };
 ```
 
 **Hover Effects:**
+
 ```tsx
-<motion.div whileHover={{ y: -10 }}>
-  Card content
-</motion.div>
+<motion.div whileHover={{ y: -10 }}>Card content</motion.div>
 ```
 
 ---
@@ -359,13 +367,13 @@ const item = {
 
 ### Breakpoints (Tailwind)
 
-| Prefix | Min Width | Target |
-|--------|-----------|--------|
-| `sm:` | 640px | Large phones |
-| `md:` | 768px | Tablets |
-| `lg:` | 1024px | Laptops |
-| `xl:` | 1280px | Desktops |
-| `2xl:` | 1536px | Large screens |
+| Prefix | Min Width | Target        |
+| ------ | --------- | ------------- |
+| `sm:`  | 640px     | Large phones  |
+| `md:`  | 768px     | Tablets       |
+| `lg:`  | 1024px    | Laptops       |
+| `xl:`  | 1280px    | Desktops      |
+| `2xl:` | 1536px    | Large screens |
 
 ### Mobile-First Approach
 
@@ -404,6 +412,7 @@ npx tsc --noEmit
 ### Code Quality
 
 **ESLint Configuration:**
+
 ```javascript
 // eslint.config.mjs
 import { dirname } from "path";
@@ -425,6 +434,7 @@ export default eslintConfig;
 ```
 
 **TypeScript Configuration:**
+
 ```json
 {
   "compilerOptions": {
@@ -455,18 +465,20 @@ export default eslintConfig;
 ### Tailwind CSS Utilities
 
 **Spacing:**
+
 ```tsx
 // Padding
-p-4   // 1rem (16px)
-p-8   // 2rem (32px)
-px-6  // Horizontal padding
-py-3  // Vertical padding
+p - 4; // 1rem (16px)
+p - 8; // 2rem (32px)
+px - 6; // Horizontal padding
+py - 3; // Vertical padding
 
 // Margin
-m-4, mx-auto, my-6
+(m - 4, mx - auto, my - 6);
 ```
 
 **Layout:**
+
 ```tsx
 // Flexbox
 flex flex-col items-center justify-between gap-4
@@ -476,11 +488,13 @@ grid grid-cols-1 md:grid-cols-3 gap-6
 ```
 
 **Typography:**
+
 ```tsx
 text-sm font-bold text-zinc-900 dark:text-white
 ```
 
 **Dark Mode:**
+
 ```tsx
 bg-white dark:bg-zinc-900
 text-zinc-900 dark:text-white
@@ -554,6 +568,7 @@ CMD ["node", "server.js"]
 ```
 
 **Build & Run:**
+
 ```bash
 docker build -t newsguard-frontend .
 docker run -p 3000:3000 -e NEXT_PUBLIC_API_URL=https://api.example.com newsguard-frontend
@@ -565,28 +580,28 @@ docker run -p 3000:3000 -e NEXT_PUBLIC_API_URL=https://api.example.com newsguard
 
 ### Core
 
-| Package | Version | Purpose |
-|---------|---------|---------|
-| `next` | 16.2.4 | React framework |
-| `react` | 19.2.4 | UI library |
-| `react-dom` | 19.2.4 | React DOM renderer |
-| `typescript` | ^5 | Type safety |
+| Package      | Version | Purpose            |
+| ------------ | ------- | ------------------ |
+| `next`       | 16.2.4  | React framework    |
+| `react`      | 19.2.4  | UI library         |
+| `react-dom`  | 19.2.4  | React DOM renderer |
+| `typescript` | ^5      | Type safety        |
 
 ### UI & Styling
 
-| Package | Version | Purpose |
-|---------|---------|---------|
-| `tailwindcss` | ^4 | Utility-first CSS |
-| `@tailwindcss/postcss` | ^4 | PostCSS plugin |
-| `clsx` | ^2.1.1 | Conditional classnames |
-| `tailwind-merge` | ^3.5.0 | Merge Tailwind classes |
-| `framer-motion` | ^12.38.0 | Animations |
-| `lucide-react` | ^1.11.0 | Icon library |
+| Package                | Version  | Purpose                |
+| ---------------------- | -------- | ---------------------- |
+| `tailwindcss`          | ^4       | Utility-first CSS      |
+| `@tailwindcss/postcss` | ^4       | PostCSS plugin         |
+| `clsx`                 | ^2.1.1   | Conditional classnames |
+| `tailwind-merge`       | ^3.5.0   | Merge Tailwind classes |
+| `framer-motion`        | ^12.38.0 | Animations             |
+| `lucide-react`         | ^1.11.0  | Icon library           |
 
 ### HTTP & Data
 
-| Package | Version | Purpose |
-|---------|---------|---------|
+| Package | Version | Purpose     |
+| ------- | ------- | ----------- |
 | `axios` | ^1.15.2 | HTTP client |
 
 ---
@@ -596,6 +611,7 @@ docker run -p 3000:3000 -e NEXT_PUBLIC_API_URL=https://api.example.com newsguard
 ### Issue: "Module not found" errors
 
 **Solution:**
+
 ```bash
 # Clear Next.js cache
 rm -rf .next
@@ -608,6 +624,7 @@ npm install
 ### Issue: Environment variables not working
 
 **Solution:**
+
 - Ensure variables are prefixed with `NEXT_PUBLIC_`
 - Restart dev server after changing `.env.local`
 - Check that `.env.local` is in the project root
@@ -615,6 +632,7 @@ npm install
 ### Issue: Dark mode not working
 
 **Solution:**
+
 - Tailwind CSS 4 uses native CSS variables
 - Ensure `dark:` variants are properly configured
 - Check browser DevTools for applied classes
@@ -626,37 +644,34 @@ npm install
 ### Image Optimization
 
 Use Next.js `<Image>` component:
-```tsx
-import Image from 'next/image';
 
-<Image
-  src="/hero.jpg"
-  alt="Hero"
-  width={1200}
-  height={600}
-  priority
-/>
+```tsx
+import Image from "next/image";
+
+<Image src="/hero.jpg" alt="Hero" width={1200} height={600} priority />;
 ```
 
 ### Code Splitting
 
 Next.js automatically code-splits by route. For dynamic imports:
-```tsx
-import dynamic from 'next/dynamic';
 
-const HeavyComponent = dynamic(() => import('./HeavyComponent'), {
+```tsx
+import dynamic from "next/dynamic";
+
+const HeavyComponent = dynamic(() => import("./HeavyComponent"), {
   loading: () => <Loader />,
-  ssr: false
+  ssr: false,
 });
 ```
 
 ### Font Optimization
 
 Next.js 16 automatically optimizes fonts. Use `next/font`:
-```tsx
-import { Inter } from 'next/font/google';
 
-const inter = Inter({ subsets: ['latin'] });
+```tsx
+import { Inter } from "next/font/google";
+
+const inter = Inter({ subsets: ["latin"] });
 ```
 
 ---
@@ -701,6 +716,6 @@ This project is licensed under the MIT License.
 
 **Built with ❤️ using Next.js 16 and React 19**
 
-*Empowering truth in the digital age*
+_Empowering truth in the digital age_
 
 </div>

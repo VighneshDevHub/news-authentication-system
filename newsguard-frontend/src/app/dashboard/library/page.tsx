@@ -86,13 +86,13 @@ export default function LibraryPage() {
         
         <div className="flex items-center gap-3">
           <div className="relative group flex-1 md:flex-none">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400 group-focus-within:text-violet-600 transition-colors" />
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400 group-focus-within:text-indigo-600 transition-colors" />
             <input 
               type="text"
               placeholder="Search library..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-11 pr-4 py-3 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl focus:ring-2 focus:ring-violet-600 outline-none transition-all w-full md:w-72 font-bold shadow-sm"
+              className="pl-11 pr-4 py-3 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl focus:ring-2 focus:ring-indigo-600 outline-none transition-all w-full md:w-72 font-bold shadow-sm"
             />
           </div>
           <button className="p-3 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors shadow-sm">
@@ -103,7 +103,7 @@ export default function LibraryPage() {
 
       {loading ? (
         <div className="py-32 flex flex-col items-center justify-center space-y-4">
-          <Loader2 className="w-10 h-10 text-violet-600 animate-spin" />
+          <Loader2 className="w-10 h-10 text-indigo-600 animate-spin" />
           <p className="text-zinc-500 font-black animate-pulse">Opening your vaults...</p>
         </div>
       ) : error ? (
@@ -127,11 +127,11 @@ export default function LibraryPage() {
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.9 }}
-                className="group bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-[2rem] overflow-hidden shadow-sm hover:shadow-xl hover:shadow-violet-500/5 transition-all duration-500 flex flex-col"
+                className="group bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-[2rem] overflow-hidden shadow-sm hover:shadow-xl hover:shadow-indigo-500/5 transition-all duration-500 flex flex-col"
               >
                 <div className="p-8 flex-1 space-y-4">
                   <div className="flex items-start justify-between">
-                    <div className="px-3 py-1 bg-violet-50 dark:bg-violet-900/20 text-violet-600 dark:text-violet-400 text-[10px] font-black uppercase tracking-widest rounded-lg">
+                    <div className="px-3 py-1 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 text-[10px] font-black uppercase tracking-widest rounded-lg">
                       {article.article_source || 'AI Analysis'}
                     </div>
                     <button 
@@ -142,7 +142,7 @@ export default function LibraryPage() {
                     </button>
                   </div>
                   
-                  <h3 className="text-xl font-black text-zinc-900 dark:text-white leading-tight group-hover:text-violet-600 transition-colors">
+                  <h3 className="text-xl font-black text-zinc-900 dark:text-white leading-tight group-hover:text-indigo-600 transition-colors">
                     {article.article_title}
                   </h3>
                   
@@ -161,7 +161,7 @@ export default function LibraryPage() {
                       href={article.article_url} 
                       target="_blank" 
                       rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 text-xs font-black text-violet-600 hover:text-violet-700 transition-colors"
+                      className="inline-flex items-center gap-2 text-xs font-black text-indigo-600 hover:text-indigo-700 transition-colors"
                     >
                       View Source
                       <ArrowUpRight className="w-4 h-4" />
@@ -182,7 +182,7 @@ export default function LibraryPage() {
             {searchQuery ? `No articles matching "${searchQuery}"` : "You haven't saved any articles yet. Verified news will appear here."}
           </p>
           {!searchQuery && (
-            <button className="px-10 py-4 bg-violet-600 text-white font-black rounded-2xl shadow-lg shadow-violet-500/25 hover:bg-violet-700 transition-all hover:-translate-y-1">
+            <button className="px-10 py-4 bg-indigo-600 text-white font-black rounded-2xl shadow-lg shadow-indigo-500/25 hover:bg-indigo-700 transition-all hover:-translate-y-1">
               Browse Latest News
             </button>
           )}

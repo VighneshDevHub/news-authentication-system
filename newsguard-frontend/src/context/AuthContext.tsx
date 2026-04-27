@@ -15,7 +15,7 @@ interface User {
 interface AuthContextType {
   user: User | null;
   loading: boolean;
-  login: (token: string) => Promise<void>;
+  login: (token: string, redirectPath?: string) => Promise<void>;
   logout: () => void;
   isAuthenticated: boolean;
 }
@@ -54,11 +54,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   }, []);
 
-  const login = async (token: string) => {
+  const login = async (token: string, redirectPath?: string) => {
     saveToken(token);
     axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
     await fetchUser(token);
-    router.push('/dashboard');
+    router.push(redirectPath || '/dashboard');
   };
 
   const logout = () => {

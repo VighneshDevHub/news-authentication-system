@@ -7,6 +7,8 @@ from app.schemas.analysis import AnalysisRequest, AnalysisResponse, BiasRequest,
 from app.services.analysis_service import AnalysisService
 from app.ai.groq_provider import GroqProvider
 from app.models.analysis import AnalysisResult
+from app.models.user import User
+from app.api import deps
 
 router = APIRouter()
 
@@ -16,14 +18,19 @@ def get_ai_provider():
 @router.post("/", response_model=AnalysisResponse)
 async def analyze_article(
     request: AnalysisRequest,
-    db: AsyncSession = Depends(get_db)
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(deps.get_current_active_user)
 ):
     """Analyze a news article by text or URL."""
     if not request.text and not request.url:
         raise HTTPException(status_code=400, detail="Either text or url is required")
 
     service = AnalysisService(db, get_ai_provider())
-    return await service.analyze_article(text=request.text or "", url=request.url)
+    return await service.analyze_article(
+        text=request.text or "", 
+        url=request.url,
+        user_id=current_user.id
+    )
 
 @router.post("/bias", response_model=BiasResponse)
 async def analyze_bias(

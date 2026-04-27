@@ -6,6 +6,8 @@ class StatsResponse(BaseModel):
     verifications_count: int
     saved_articles_count: int
     search_queries_count: int
+    average_score: float
+    activity_data: List[Dict[str, Any]]
     by_category: Optional[List[Dict[str, Any]]] = None
     by_score: Optional[List[Dict[str, Any]]] = None
 

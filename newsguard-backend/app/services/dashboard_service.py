@@ -9,12 +9,30 @@ class DashboardService:
     def __init__(self, db: AsyncSession):
         self.db = db
 
-    async def get_stats(self, user_id: int = None) -> Dict[str, int]:
-        # Verifications Count
-        v_stmt = select(func.count(AnalysisResult.id))
+    async def get_stats(self, user_id: int = None, days: int = 7) -> Dict[str, Any]:
+        # Verifications Count & Average Score
+        v_stmt = select(
+            func.count(AnalysisResult.id),
+            func.avg(AnalysisResult.authenticity_score)
+        )
         if user_id:
             v_stmt = v_stmt.where(AnalysisResult.user_id == user_id)
-        v_count = (await self.db.execute(v_stmt)).scalar() or 0
+        v_res = (await self.db.execute(v_stmt)).first()
+        v_count = v_res[0] or 0
+        avg_score = round(float(v_res[1] or 0))
+
+        # Activity Data
+        from datetime import datetime, timedelta
+        start_date = datetime.utcnow() - timedelta(days=days)
+        activity_stmt = select(
+            func.date(AnalysisResult.created_at).label("date"),
+            func.count(AnalysisResult.id).label("count")
+        ).where(AnalysisResult.created_at >= start_date)
+        if user_id:
+            activity_stmt = activity_stmt.where(AnalysisResult.user_id == user_id)
+        activity_stmt = activity_stmt.group_by("date").order_by("date")
+        activity_results = (await self.db.execute(activity_stmt)).all()
+        activity_data = [{"date": str(r[0]), "scans": r[1]} for r in activity_results]
 
         # Saved Articles Count
         sa_stmt = select(func.count(SavedArticle.id))
@@ -53,6 +71,8 @@ class DashboardService:
             "verifications_count": v_count,
             "saved_articles_count": sa_count,
             "search_queries_count": sq_count,
+            "average_score": avg_score,
+            "activity_data": activity_data,
             "by_category": by_category,
             "by_score": by_score
         }

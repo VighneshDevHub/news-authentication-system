@@ -8,14 +8,19 @@ import {
   Shield, 
   Bell, 
   Globe,
-  CreditCard,
   ChevronRight,
   Loader2,
   CheckCircle2,
-  AlertCircle
+  AlertCircle,
+  Smartphone,
+  ShieldCheck,
+  CreditCard,
+  LogOut
 } from 'lucide-react';
 import axios from 'axios';
 import { getToken } from '@/utils/auth';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useAuth } from '@/context/AuthContext';
 
 interface UserProfile {
   id: number;
@@ -32,6 +37,7 @@ interface UserProfile {
 }
 
 export default function SettingsPage() {
+  const { logout } = useAuth();
   const [user, setUser] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -126,220 +132,264 @@ export default function SettingsPage() {
 
   if (loading) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-4">
-        <Loader2 className="w-10 h-10 text-violet-600 animate-spin" />
-        <p className="text-zinc-500 font-black animate-pulse">Loading settings...</p>
+      <div className="flex flex-col items-center justify-center min-h-[400px] space-y-4">
+        <Loader2 className="w-10 h-10 text-indigo-600 animate-spin" />
+        <p className="text-slate-500 font-bold animate-pulse">Syncing profile data...</p>
       </div>
     );
   }
 
   return (
-    <div className="max-w-4xl space-y-10">
-      <div className="space-y-1">
-        <h1 className="text-3xl font-black tracking-tight text-zinc-900 dark:text-white">Account Settings</h1>
-        <p className="text-zinc-500 dark:text-zinc-400 font-medium">Manage your profile, security, and application preferences</p>
+    <div className="max-w-5xl mx-auto pb-20">
+      <div className="mb-10">
+        <h1 className="text-3xl font-bold text-slate-900 dark:text-white">Settings</h1>
+        <p className="text-slate-500 dark:text-zinc-400 font-medium">Manage your personal information and preferences.</p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
-        {/* Sidebar Nav */}
-        <div className="space-y-2">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
+        {/* Navigation Tabs */}
+        <div className="lg:col-span-3 flex lg:flex-col gap-2 overflow-x-auto pb-4 lg:pb-0 scrollbar-none">
           {[
-            { label: 'General', icon: User },
-            { label: 'Security', icon: Shield },
-            { label: 'Notifications', icon: Bell },
-            { label: 'Preferences', icon: Globe },
-          ].map((item) => (
+            { id: 'General', label: 'General', icon: User },
+            { id: 'Security', label: 'Security', icon: ShieldCheck },
+            { id: 'Notifications', label: 'Notifications', icon: Bell },
+            { id: 'Preferences', label: 'Preferences', icon: Globe },
+          ].map((tab) => (
             <button
-              key={item.label}
-              onClick={() => setActiveTab(item.label)}
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
               className={`
-                w-full flex items-center gap-3 px-4 py-3 rounded-2xl font-bold transition-all
-                ${activeTab === item.label 
-                  ? 'bg-violet-600 text-white shadow-lg shadow-violet-500/20' 
-                  : 'text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-800'
+                flex items-center gap-3 px-5 py-3 rounded-xl text-sm font-bold transition-all whitespace-nowrap
+                ${activeTab === tab.id 
+                  ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/20' 
+                  : 'text-slate-500 hover:bg-white dark:hover:bg-zinc-900 hover:text-slate-900 dark:hover:text-white'
                 }
               `}
             >
-              <item.icon className="w-5 h-5" />
-              {item.label}
-              {activeTab === item.label && <ChevronRight className="w-4 h-4 ml-auto" />}
+              <tab.icon className="w-4 h-4" />
+              {tab.label}
             </button>
           ))}
+          <div className="hidden lg:block my-4 border-t border-slate-200 dark:border-zinc-800" />
+          <button
+            onClick={logout}
+            className="flex items-center gap-3 px-5 py-3 rounded-xl text-sm font-bold text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/30 transition-all whitespace-nowrap"
+          >
+            <LogOut className="w-4 h-4" />
+            Sign Out
+          </button>
         </div>
 
         {/* Content Area */}
-        <div className="md:col-span-2">
-          {activeTab === 'General' && (
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
+        <div className="lg:col-span-9">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={activeTab}
+              initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              className="bg-white dark:bg-zinc-900 rounded-[2.5rem] border border-zinc-200 dark:border-zinc-800 p-8 space-y-8 shadow-sm"
+              exit={{ opacity: 0, y: -10 }}
+              className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-[2rem] overflow-hidden"
             >
-              <div className="flex items-center gap-6 pb-8 border-b border-zinc-100 dark:border-zinc-800">
-                <div className="w-20 h-20 rounded-3xl bg-gradient-to-tr from-violet-500 to-fuchsia-500 flex items-center justify-center text-white text-3xl font-black shadow-lg shadow-violet-500/20">
-                  {user?.username.charAt(0).toUpperCase()}
-                </div>
-                <div>
-                  <h3 className="text-xl font-black text-zinc-900 dark:text-white">{user?.username}</h3>
-                  <p className="text-sm font-bold text-zinc-500 capitalize">{user?.role || 'User'} Account</p>
-                </div>
-              </div>
-
-              <form onSubmit={handleUpdateProfile} className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="space-y-2">
-                    <label className="text-xs font-black text-zinc-400 uppercase tracking-widest ml-1">Username</label>
-                    <div className="relative">
-                      <User className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400" />
-                      <input 
-                        type="text" 
-                        value={formData.username}
-                        onChange={(e) => setFormData({ ...formData, username: e.target.value })}
-                        className="w-full pl-11 pr-4 py-3.5 bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-100 dark:border-zinc-800 rounded-2xl focus:ring-2 focus:ring-violet-500 outline-none font-bold transition-all"
-                      />
+              {activeTab === 'General' && (
+                <div className="p-8 lg:p-10">
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-6 mb-10 pb-10 border-b border-slate-100 dark:border-zinc-800">
+                    <div className="w-24 h-24 rounded-3xl bg-indigo-100 dark:bg-indigo-900/50 flex items-center justify-center text-indigo-600 dark:text-indigo-400 text-3xl font-black">
+                      {user?.username.charAt(0).toUpperCase()}
+                    </div>
+                    <div className="space-y-1">
+                      <h3 className="text-2xl font-bold text-slate-900 dark:text-white">{user?.username}</h3>
+                      <p className="text-slate-500 font-medium">{user?.email}</p>
+                      <div className="flex items-center gap-2 mt-2">
+                        <span className="px-3 py-1 bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 rounded-full text-[10px] font-bold uppercase tracking-wider">Verified Account</span>
+                        <span className="px-3 py-1 bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 rounded-full text-[10px] font-bold uppercase tracking-wider capitalize">{user?.role}</span>
+                      </div>
                     </div>
                   </div>
-                  <div className="space-y-2">
-                    <label className="text-xs font-black text-zinc-400 uppercase tracking-widest ml-1">Email Address</label>
-                    <div className="relative">
-                      <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400" />
-                      <input 
-                        type="email" 
-                        value={formData.email}
-                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                        className="w-full pl-11 pr-4 py-3.5 bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-100 dark:border-zinc-800 rounded-2xl focus:ring-2 focus:ring-violet-500 outline-none font-bold transition-all"
-                      />
+
+                  <form onSubmit={handleUpdateProfile} className="space-y-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div className="space-y-2">
+                        <label className="text-xs font-bold text-slate-400 uppercase tracking-wider ml-1">Username</label>
+                        <input 
+                          type="text" 
+                          value={formData.username}
+                          onChange={(e) => setFormData({ ...formData, username: e.target.value })}
+                          className="w-full px-5 py-3.5 bg-slate-50 dark:bg-zinc-800/50 border border-slate-200 dark:border-zinc-800 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none font-bold transition-all text-slate-900 dark:text-white"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <label className="text-xs font-bold text-slate-400 uppercase tracking-wider ml-1">Email Address</label>
+                        <input 
+                          type="email" 
+                          value={formData.email}
+                          onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                          className="w-full px-5 py-3.5 bg-slate-50 dark:bg-zinc-800/50 border border-slate-200 dark:border-zinc-800 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none font-bold transition-all text-slate-900 dark:text-white"
+                        />
+                      </div>
+                    </div>
+
+                    <AnimatePresence>
+                      {message.text && (
+                        <motion.div 
+                          initial={{ opacity: 0, height: 0 }}
+                          animate={{ opacity: 1, height: 'auto' }}
+                          exit={{ opacity: 0, height: 0 }}
+                          className={`p-4 rounded-xl flex items-center gap-3 font-bold ${
+                            message.type === 'success' ? 'bg-emerald-50 text-emerald-600 border border-emerald-100' : 'bg-rose-50 text-rose-600 border border-rose-100'
+                          }`}
+                        >
+                          {message.type === 'success' ? <CheckCircle2 className="w-5 h-5" /> : <AlertCircle className="w-5 h-5" />}
+                          {message.text}
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+
+                    <button 
+                      type="submit"
+                      disabled={saving}
+                      className="px-8 py-4 bg-indigo-600 text-white rounded-xl font-bold hover:bg-indigo-700 shadow-lg shadow-indigo-600/20 transition-all flex items-center justify-center gap-2 active:scale-95 disabled:opacity-50"
+                    >
+                      {saving ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Update Profile'}
+                    </button>
+                  </form>
+                </div>
+              )}
+
+              {activeTab === 'Security' && (
+                <div className="p-8 lg:p-10">
+                  <div className="mb-8">
+                    <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">Change Password</h3>
+                    <p className="text-slate-500 font-medium text-sm">Update your password to keep your account secure.</p>
+                  </div>
+
+                  <form onSubmit={handleUpdateProfile} className="max-w-md space-y-6">
+                    <div className="space-y-4">
+                      <div className="space-y-2">
+                        <label className="text-xs font-bold text-slate-400 uppercase tracking-wider ml-1">New Password</label>
+                        <input 
+                          type="password" 
+                          value={formData.password}
+                          onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                          className="w-full px-5 py-3.5 bg-slate-50 dark:bg-zinc-800/50 border border-slate-200 dark:border-zinc-800 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none font-bold transition-all"
+                          placeholder="••••••••"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <label className="text-xs font-bold text-slate-400 uppercase tracking-wider ml-1">Confirm New Password</label>
+                        <input 
+                          type="password" 
+                          value={formData.confirmPassword}
+                          onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
+                          className="w-full px-5 py-3.5 bg-slate-50 dark:bg-zinc-800/50 border border-slate-200 dark:border-zinc-800 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none font-bold transition-all"
+                          placeholder="••••••••"
+                        />
+                      </div>
+                    </div>
+
+                    <button 
+                      type="submit"
+                      disabled={saving}
+                      className="w-full sm:w-auto px-8 py-4 bg-indigo-600 text-white rounded-xl font-bold hover:bg-indigo-700 shadow-lg shadow-indigo-600/20 transition-all flex items-center justify-center gap-2"
+                    >
+                      {saving ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Update Password'}
+                    </button>
+                  </form>
+
+                  <div className="mt-12 pt-10 border-t border-slate-100 dark:border-zinc-800">
+                    <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-6">Two-Factor Authentication</h3>
+                    <div className="p-6 bg-slate-50 dark:bg-zinc-800/30 rounded-2xl flex items-center justify-between">
+                      <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 bg-white dark:bg-zinc-900 rounded-xl flex items-center justify-center border border-slate-200 dark:border-zinc-800">
+                          <Smartphone className="w-6 h-6 text-slate-400" />
+                        </div>
+                        <div>
+                          <p className="font-bold text-slate-900 dark:text-white">Authenticator App</p>
+                          <p className="text-sm text-slate-500">Add an extra layer of security to your account.</p>
+                        </div>
+                      </div>
+                      <button className="px-4 py-2 bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-lg text-xs font-bold hover:bg-slate-50 transition-colors">Setup 2FA</button>
                     </div>
                   </div>
                 </div>
+              )}
 
-                {message.text && (
-                  <div className={`p-4 rounded-2xl flex items-center gap-3 font-bold ${
-                    message.type === 'success' ? 'bg-emerald-50 text-emerald-600 border border-emerald-100' : 'bg-rose-50 text-rose-600 border border-rose-100'
-                  }`}>
-                    {message.type === 'success' ? <CheckCircle2 className="w-5 h-5" /> : <AlertCircle className="w-5 h-5" />}
-                    {message.text}
+              {activeTab === 'Notifications' && (
+                <div className="p-8 lg:p-10">
+                  <div className="mb-10">
+                    <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">Notification Settings</h3>
+                    <p className="text-slate-500 font-medium text-sm">Control how and when you want to be notified.</p>
                   </div>
-                )}
 
-                <button 
-                  type="submit"
-                  disabled={saving}
-                  className="w-full bg-violet-600 text-white py-4 rounded-2xl font-black hover:bg-violet-700 shadow-lg shadow-violet-500/20 transition-all flex items-center justify-center gap-2"
-                >
-                  {saving ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Save Profile Changes'}
-                </button>
-              </form>
-            </motion.div>
-          )}
+                  <div className="space-y-6">
+                    {[
+                      { id: 'notifications', title: 'Email Notifications', desc: 'Receive daily digests and major alerts via email.' },
+                      { id: 'security_alerts', title: 'Security Alerts', desc: 'Get notified about new logins and security changes.', permanent: true },
+                      { id: 'news_updates', title: 'Neural Analysis Updates', desc: 'Be notified when your background scans are complete.' },
+                    ].map((item) => (
+                      <div key={item.id} className="flex items-center justify-between p-6 bg-slate-50 dark:bg-zinc-800/30 rounded-2xl">
+                        <div className="max-w-md">
+                          <p className="font-bold text-slate-900 dark:text-white">{item.title}</p>
+                          <p className="text-sm text-slate-500">{item.desc}</p>
+                        </div>
+                        <button 
+                          disabled={item.permanent}
+                          onClick={() => updatePreference(item.id, !user?.preferences[item.id as keyof typeof user.preferences])}
+                          className={`w-14 h-8 rounded-full transition-all relative ${item.permanent || user?.preferences[item.id as keyof typeof user.preferences] ? 'bg-indigo-600' : 'bg-slate-200 dark:bg-zinc-800'}`}
+                        >
+                          <div className={`absolute top-1 w-6 h-6 rounded-full bg-white shadow-md transition-all ${item.permanent || user?.preferences[item.id as keyof typeof user.preferences] ? 'right-1' : 'left-1'}`} />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
 
-          {activeTab === 'Security' && (
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="bg-white dark:bg-zinc-900 rounded-[2.5rem] border border-zinc-200 dark:border-zinc-800 p-8 space-y-8 shadow-sm"
-            >
-              <h3 className="text-xl font-black text-zinc-900 dark:text-white">Update Password</h3>
-              <form onSubmit={handleUpdateProfile} className="space-y-6">
-                <div className="space-y-4">
-                  <div className="space-y-2">
-                    <label className="text-xs font-black text-zinc-400 uppercase tracking-widest ml-1">New Password</label>
-                    <div className="relative">
-                      <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400" />
-                      <input 
-                        type="password" 
-                        value={formData.password}
-                        onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                        className="w-full pl-11 pr-4 py-3.5 bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-100 dark:border-zinc-800 rounded-2xl focus:ring-2 focus:ring-violet-500 outline-none font-bold transition-all"
-                      />
+              {activeTab === 'Preferences' && (
+                <div className="p-8 lg:p-10">
+                  <div className="mb-10">
+                    <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">Application Preferences</h3>
+                    <p className="text-slate-500 font-medium text-sm">Customize your NewsGuard experience.</p>
+                  </div>
+
+                  <div className="space-y-8">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-6 bg-slate-50 dark:bg-zinc-800/30 rounded-2xl">
+                      <div>
+                        <p className="font-bold text-slate-900 dark:text-white">Verification Engine</p>
+                        <p className="text-sm text-slate-500">Choose your preferred balance of speed and depth.</p>
+                      </div>
+                      <select 
+                        value={user?.preferences.verificationLevel || 'standard'}
+                        onChange={(e) => updatePreference('verificationLevel', e.target.value)}
+                        className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-xl px-4 py-2 font-bold text-sm text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-indigo-500"
+                      >
+                        <option value="standard">Standard (Fast)</option>
+                        <option value="strict">Strict (High Depth)</option>
+                        <option value="neural">Neural Pro (Experimental)</option>
+                      </select>
+                    </div>
+
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-6 bg-slate-50 dark:bg-zinc-800/30 rounded-2xl">
+                      <div>
+                        <p className="font-bold text-slate-900 dark:text-white">Default Language</p>
+                        <p className="text-sm text-slate-500">The primary language for neural analysis reports.</p>
+                      </div>
+                      <select 
+                        value={user?.preferences.language || 'en'}
+                        onChange={(e) => updatePreference('language', e.target.value)}
+                        className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-xl px-4 py-2 font-bold text-sm text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-indigo-500"
+                      >
+                        <option value="en">English (US)</option>
+                        <option value="en-gb">English (UK)</option>
+                        <option value="es">Spanish</option>
+                        <option value="fr">French</option>
+                        <option value="de">German</option>
+                      </select>
                     </div>
                   </div>
-                  <div className="space-y-2">
-                    <label className="text-xs font-black text-zinc-400 uppercase tracking-widest ml-1">Confirm New Password</label>
-                    <div className="relative">
-                      <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400" />
-                      <input 
-                        type="password" 
-                        value={formData.confirmPassword}
-                        onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
-                        className="w-full pl-11 pr-4 py-3.5 bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-100 dark:border-zinc-800 rounded-2xl focus:ring-2 focus:ring-violet-500 outline-none font-bold transition-all"
-                      />
-                    </div>
-                  </div>
                 </div>
-                <button 
-                  type="submit"
-                  disabled={saving}
-                  className="w-full bg-violet-600 text-white py-4 rounded-2xl font-black hover:bg-violet-700 shadow-lg shadow-violet-500/20 transition-all flex items-center justify-center gap-2"
-                >
-                  {saving ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Update Security Settings'}
-                </button>
-              </form>
+              )}
             </motion.div>
-          )}
-
-          {activeTab === 'Notifications' && (
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="bg-white dark:bg-zinc-900 rounded-[2.5rem] border border-zinc-200 dark:border-zinc-800 p-8 space-y-6 shadow-sm"
-            >
-              <div className="flex items-center justify-between">
-                <div>
-                  <h3 className="text-lg font-black text-zinc-900 dark:text-white">Email Notifications</h3>
-                  <p className="text-sm text-zinc-500 font-medium">Receive alerts about your verifications</p>
-                </div>
-                <button 
-                  onClick={() => updatePreference('notifications', !user?.preferences.notifications)}
-                  className={`w-14 h-8 rounded-full transition-all relative ${user?.preferences.notifications ? 'bg-violet-600' : 'bg-zinc-200 dark:bg-zinc-800'}`}
-                >
-                  <div className={`absolute top-1 w-6 h-6 rounded-full bg-white shadow-md transition-all ${user?.preferences.notifications ? 'right-1' : 'left-1'}`} />
-                </button>
-              </div>
-            </motion.div>
-          )}
-
-          {activeTab === 'Preferences' && (
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="bg-white dark:bg-zinc-900 rounded-[2.5rem] border border-zinc-200 dark:border-zinc-800 p-8 space-y-8 shadow-sm"
-            >
-              <div className="space-y-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h3 className="text-lg font-black text-zinc-900 dark:text-white">Verification Level</h3>
-                    <p className="text-sm text-zinc-500 font-medium">Choose between speed and depth</p>
-                  </div>
-                  <select 
-                    value={user?.preferences.verificationLevel || 'standard'}
-                    onChange={(e) => updatePreference('verificationLevel', e.target.value)}
-                    className="bg-zinc-100 dark:bg-zinc-800 border-none rounded-xl px-4 py-2 font-bold text-zinc-900 dark:text-white focus:ring-2 focus:ring-violet-500 outline-none"
-                  >
-                    <option value="standard">Standard</option>
-                    <option value="strict">Strict (High Accuracy)</option>
-                  </select>
-                </div>
-
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h3 className="text-lg font-black text-zinc-900 dark:text-white">Default Language</h3>
-                    <p className="text-sm text-zinc-500 font-medium">Your preferred interface language</p>
-                  </div>
-                  <select 
-                    value={user?.preferences.language || 'en'}
-                    onChange={(e) => updatePreference('language', e.target.value)}
-                    className="bg-zinc-100 dark:bg-zinc-800 border-none rounded-xl px-4 py-2 font-bold text-zinc-900 dark:text-white focus:ring-2 focus:ring-violet-500 outline-none"
-                  >
-                    <option value="en">English</option>
-                    <option value="es">Spanish</option>
-                    <option value="fr">French</option>
-                    <option value="ar">Arabic (RTL)</option>
-                  </select>
-                </div>
-              </div>
-            </motion.div>
-          )}
+          </AnimatePresence>
         </div>
       </div>
     </div>

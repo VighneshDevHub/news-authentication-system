@@ -13,7 +13,7 @@ export default function VerifyPage() {
           <p className="text-zinc-500 dark:text-zinc-400 font-medium">Verify news, claims, and articles using advanced AI analysis</p>
         </div>
         
-        <div className="flex items-center gap-2 px-4 py-2 bg-violet-50 dark:bg-violet-900/10 border border-violet-100 dark:border-violet-800/50 rounded-xl text-violet-600 dark:text-violet-400">
+        <div className="flex items-center gap-2 px-4 py-2 bg-indigo-50 dark:bg-indigo-900/10 border border-indigo-100 dark:border-indigo-800/50 rounded-xl text-indigo-600 dark:text-indigo-400">
           <Info className="w-4 h-4" />
           <span className="text-sm font-bold">Free scans: Unlimited</span>
         </div>

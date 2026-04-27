@@ -11,11 +11,12 @@ router = APIRouter()
 
 @router.get("/stats", response_model=StatsResponse)
 async def get_dashboard_stats(
+    days: int = 7,
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(deps.get_current_active_user)
 ):
     service = DashboardService(db)
-    stats = await service.get_stats(user_id=current_user.id)
+    stats = await service.get_stats(user_id=current_user.id, days=days)
     return stats
 
 @router.get("/history", response_model=DashboardHistoryResponse)

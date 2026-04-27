@@ -46,7 +46,7 @@ export default function SignUpPage() {
           <div className="hidden lg:block space-y-8 p-6">
             <div className="space-y-4">
               <h2 className="text-5xl font-black tracking-tight text-zinc-900 dark:text-white leading-tight">
-                Join the elite circle of <span className="text-violet-600">informed readers</span>
+                Join the elite circle of <span className="text-indigo-600">informed readers</span>
               </h2>
               <p className="text-lg text-zinc-500 dark:text-zinc-400 leading-relaxed font-medium">
                 Create an account to unlock advanced verification features and maintain your analysis history.
@@ -61,8 +61,8 @@ export default function SignUpPage() {
                 "Advanced bias detection reports",
               ].map((feature, i) => (
                 <div key={i} className="flex items-center gap-3 text-zinc-700 dark:text-zinc-300">
-                  <div className="p-1.5 bg-violet-100 dark:bg-violet-900/30 rounded-full">
-                    <CheckCircle2 className="w-5 h-5 text-violet-600" />
+                  <div className="p-1.5 bg-indigo-100 dark:bg-indigo-900/30 rounded-full">
+                    <CheckCircle2 className="w-5 h-5 text-indigo-600" />
                   </div>
                   <span className="font-bold">{feature}</span>
                 </div>
@@ -71,13 +71,13 @@ export default function SignUpPage() {
 
             <div className="p-8 bg-white dark:bg-zinc-800 rounded-3xl border border-zinc-200 dark:border-zinc-700 shadow-sm relative overflow-hidden group">
               <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:scale-110 transition-transform">
-                <Shield className="w-20 h-20 text-violet-600" />
+                <Shield className="w-20 h-20 text-indigo-600" />
               </div>
               <p className="text-base text-zinc-600 dark:text-zinc-300 italic relative z-10 font-medium">
                 "NewsGuard has completely changed how I consume information online. It's like having a team of fact-checkers in my pocket."
               </p>
               <div className="mt-6 flex items-center gap-4 relative z-10">
-                <div className="w-12 h-12 rounded-full bg-gradient-to-tr from-violet-500 to-fuchsia-500 border-2 border-white dark:border-zinc-700 shadow-md" />
+                <div className="w-12 h-12 rounded-full bg-gradient-to-tr from-indigo-500 to-fuchsia-500 border-2 border-white dark:border-zinc-700 shadow-md" />
                 <div>
                   <p className="text-base font-black text-zinc-900 dark:text-white">Sarah Jenkins</p>
                   <p className="text-sm font-bold text-zinc-500">Journalist @ TechDaily</p>
@@ -105,7 +105,7 @@ export default function SignUpPage() {
                 <div className="space-y-2">
                   <label className="text-sm font-bold text-zinc-700 dark:text-zinc-300 ml-1">Username</label>
                   <div className="relative group">
-                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-zinc-400 group-focus-within:text-violet-600 transition-colors">
+                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-zinc-400 group-focus-within:text-indigo-600 transition-colors">
                       <User className="w-5 h-5" />
                     </div>
                     <input
@@ -113,7 +113,7 @@ export default function SignUpPage() {
                       required
                       value={formData.username}
                       onChange={(e) => setFormData({ ...formData, username: e.target.value })}
-                      className="block w-full pl-11 pr-4 py-3.5 bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-2xl focus:ring-2 focus:ring-violet-600 focus:border-transparent outline-none transition-all placeholder:text-zinc-400 text-zinc-900 dark:text-white font-medium"
+                      className="block w-full pl-11 pr-4 py-3.5 bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-2xl focus:ring-2 focus:ring-indigo-600 focus:border-transparent outline-none transition-all placeholder:text-zinc-400 text-zinc-900 dark:text-white font-medium"
                       placeholder="yourusername"
                     />
                   </div>
@@ -122,7 +122,7 @@ export default function SignUpPage() {
                 <div className="space-y-2">
                   <label className="text-sm font-bold text-zinc-700 dark:text-zinc-300 ml-1">Email Address</label>
                   <div className="relative group">
-                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-zinc-400 group-focus-within:text-violet-600 transition-colors">
+                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-zinc-400 group-focus-within:text-indigo-600 transition-colors">
                       <Mail className="w-5 h-5" />
                     </div>
                     <input
@@ -130,7 +130,7 @@ export default function SignUpPage() {
                       required
                       value={formData.email}
                       onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                      className="block w-full pl-11 pr-4 py-3.5 bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-2xl focus:ring-2 focus:ring-violet-600 focus:border-transparent outline-none transition-all placeholder:text-zinc-400 text-zinc-900 dark:text-white font-medium"
+                      className="block w-full pl-11 pr-4 py-3.5 bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-2xl focus:ring-2 focus:ring-indigo-600 focus:border-transparent outline-none transition-all placeholder:text-zinc-400 text-zinc-900 dark:text-white font-medium"
                       placeholder="name@example.com"
                     />
                   </div>
@@ -139,7 +139,7 @@ export default function SignUpPage() {
                 <div className="space-y-2">
                   <label className="text-sm font-bold text-zinc-700 dark:text-zinc-300 ml-1">Password</label>
                   <div className="relative group">
-                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-zinc-400 group-focus-within:text-violet-600 transition-colors">
+                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-zinc-400 group-focus-within:text-indigo-600 transition-colors">
                       <Lock className="w-5 h-5" />
                     </div>
                     <input
@@ -147,7 +147,7 @@ export default function SignUpPage() {
                       required
                       value={formData.password}
                       onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                      className="block w-full pl-11 pr-4 py-3.5 bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-2xl focus:ring-2 focus:ring-violet-600 focus:border-transparent outline-none transition-all placeholder:text-zinc-400 text-zinc-900 dark:text-white font-medium"
+                      className="block w-full pl-11 pr-4 py-3.5 bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-2xl focus:ring-2 focus:ring-indigo-600 focus:border-transparent outline-none transition-all placeholder:text-zinc-400 text-zinc-900 dark:text-white font-medium"
                       placeholder="••••••••"
                     />
                   </div>
@@ -157,7 +157,7 @@ export default function SignUpPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full flex items-center justify-center gap-2 px-8 py-4 bg-violet-600 text-white font-black rounded-2xl hover:bg-violet-700 transition-all shadow-lg shadow-violet-500/25 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full flex items-center justify-center gap-2 px-8 py-4 bg-indigo-600 text-white font-black rounded-2xl hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-500/25 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {loading ? (
                   <Loader2 className="w-5 h-5 animate-spin" />
@@ -173,7 +173,7 @@ export default function SignUpPage() {
             <div className="text-center pt-6">
               <p className="text-sm text-zinc-500 dark:text-zinc-400 font-bold">
                 Already have an account?{' '}
-                <Link href="/signin" className="font-black text-violet-600 hover:text-violet-700 transition-colors">
+                <Link href="/signin" className="font-black text-indigo-600 hover:text-indigo-700 transition-colors">
                   Sign In
                 </Link>
               </p>
