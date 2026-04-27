@@ -1,37 +1,57 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.future import select
+
 from app.db.session import get_db
-from app.schemas.analysis import AnalysisRequest, AnalysisResponse
+from app.schemas.analysis import AnalysisRequest, AnalysisResponse, BiasRequest, BiasResponse
 from app.services.analysis_service import AnalysisService
 from app.ai.groq_provider import GroqProvider
-from app.ai.ollama_provider import OllamaProvider
-from app.core.config import settings
+from app.models.analysis import AnalysisResult
 
 router = APIRouter()
+
+def get_ai_provider():
+    return GroqProvider()
 
 @router.post("/", response_model=AnalysisResponse)
 async def analyze_article(
     request: AnalysisRequest,
     db: AsyncSession = Depends(get_db)
 ):
-    """
-    Analyze a news article text for authenticity.
-    """
-    if not request.text:
+    """Analyze a news article by text or URL."""
+    if not request.text and not request.url:
+        raise HTTPException(status_code=400, detail="Either text or url is required")
+
+    service = AnalysisService(db, get_ai_provider())
+    return await service.analyze_article(text=request.text or "", url=request.url)
+
+@router.post("/bias", response_model=BiasResponse)
+async def analyze_bias(
+    request: BiasRequest,
+    db: AsyncSession = Depends(get_db)
+):
+    """Run bias-only analysis on a piece of text."""
+    if not request.text.strip():
         raise HTTPException(status_code=400, detail="Text is required")
 
-    # Dependency Injection for AI Provider
-    # Prefer Groq if API key is provided, otherwise fallback to Ollama
-    if settings.GROQ_API_KEY:
-        ai_provider = GroqProvider()
-    else:
-        ai_provider = OllamaProvider()
-    
-    service = AnalysisService(db, ai_provider)
-    
-    try:
-        result = await service.analyze_article(request.text)
-        return result
-    except Exception as e:
-        print(f"Analysis Error: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+    service = AnalysisService(db, get_ai_provider())
+    return await service.analyze_bias_only(request.text)
+
+@router.get("/{analysis_id}")
+async def get_analysis(
+    analysis_id: int,
+    db: AsyncSession = Depends(get_db)
+):
+    """Retrieve a past analysis result by ID."""
+    result = await db.execute(select(AnalysisResult).where(AnalysisResult.id == analysis_id))
+    analysis = result.scalars().first()
+    if not analysis:
+        raise HTTPException(status_code=404, detail="Analysis not found")
+    return {
+        "id": analysis.id,
+        "score": analysis.authenticity_score,
+        "verdict": analysis.verdict,
+        "text": analysis.original_text,
+        "result": analysis.details,
+        "created_at": analysis.created_at
+    }

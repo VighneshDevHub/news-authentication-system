@@ -1,18 +1,14 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
 import { Shield, Menu, X, LayoutDashboard } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { isAuthenticated } from '@/utils/auth';
+import { useAuth } from '@/context/AuthContext';
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
-  const [isAuth, setIsAuth] = useState(false);
-
-  useEffect(() => {
-    setIsAuth(isAuthenticated());
-  }, []);
+  const { isAuthenticated } = useAuth();
 
   return (
     <nav className="fixed w-full z-50 top-0 left-0 bg-white/70 dark:bg-zinc-950/70 backdrop-blur-xl border-b border-zinc-200/50 dark:border-zinc-800/50 transition-all duration-300">
@@ -38,7 +34,7 @@ export default function Navbar() {
               How it Works
             </Link>
             <div className="flex items-center gap-6 border-l border-zinc-200 dark:border-zinc-800 ml-4 pl-8">
-              {isAuth ? (
+              {isAuthenticated ? (
                 <Link 
                   href="/dashboard" 
                   className="inline-flex items-center justify-center gap-2 px-6 py-2.5 text-sm font-bold text-white bg-violet-600 rounded-full hover:bg-violet-700 transition-all shadow-xl shadow-violet-500/20 active:scale-95"
@@ -88,7 +84,7 @@ export default function Navbar() {
             How it Works
           </Link>
           <div className="pt-4 border-t border-zinc-200 dark:border-zinc-800 flex flex-col gap-4">
-            {isAuth ? (
+            {isAuthenticated ? (
               <Link 
                 href="/dashboard" 
                 className="inline-flex items-center justify-center gap-2 px-4 py-3 text-base font-bold text-white bg-violet-600 rounded-xl hover:bg-violet-700 transition-all"
@@ -98,7 +94,10 @@ export default function Navbar() {
               </Link>
             ) : (
               <>
-                <Link href="/signin" className="text-base font-semibold text-zinc-600 dark:text-zinc-400">
+                <Link 
+                  href="/signin" 
+                  className="block w-full text-center px-4 py-3 text-base font-semibold text-zinc-600 dark:text-zinc-400"
+                >
                   Sign In
                 </Link>
                 <Link 

@@ -16,13 +16,29 @@ import {
   ArrowDownRight
 } from 'lucide-react';
 import axios from 'axios';
-import { getToken } from '@/utils/auth';
+import { useAuth } from '@/context/AuthContext';
 import { motion } from 'framer-motion';
+import { 
+  BarChart, 
+  Bar, 
+  XAxis, 
+  YAxis, 
+  CartesianGrid, 
+  Tooltip, 
+  ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell,
+  LineChart,
+  Line
+} from 'recharts';
 
 interface DashboardStats {
   verifications_count: number;
   saved_articles_count: number;
   search_queries_count: number;
+  by_category?: { name: string; value: number }[];
+  by_score?: { name: string; count: number }[];
 }
 
 interface HistoryItem {
@@ -34,21 +50,18 @@ interface HistoryItem {
 }
 
 export default function DashboardPage() {
+  const { user } = useAuth();
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [history, setHistory] = useState<HistoryItem[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
+      if (!user) return;
       try {
-        const token = getToken();
         const [statsRes, historyRes] = await Promise.all([
-          axios.get(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1'}/dashboard/stats`, {
-            headers: { Authorization: `Bearer ${token}` }
-          }),
-          axios.get(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1'}/dashboard/history`, {
-            headers: { Authorization: `Bearer ${token}` }
-          })
+          axios.get(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1'}/dashboard/stats`),
+          axios.get(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1'}/dashboard/history`)
         ]);
         setStats(statsRes.data);
         setHistory(historyRes.data.verification_history || []);
@@ -59,13 +72,15 @@ export default function DashboardPage() {
       }
     };
     fetchData();
-  }, []);
+  }, [user]);
 
   const getScoreColor = (score: number) => {
     if (score >= 80) return 'text-emerald-500 bg-emerald-500/10';
     if (score >= 50) return 'text-amber-500 bg-amber-500/10';
     return 'text-rose-500 bg-rose-500/10';
   };
+
+  const COLORS = ['#8b5cf6', '#d946ef', '#06b6d4', '#10b981', '#f59e0b', '#ef4444', '#6366f1'];
 
   if (loading) {
     return (
@@ -94,6 +109,86 @@ export default function DashboardPage() {
           <div className="pr-4">
             <p className="text-[10px] font-black text-zinc-400 uppercase tracking-widest">Efficiency</p>
             <p className="text-sm font-black text-zinc-900 dark:text-white">+12.5% this week</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Analytics Visualizations */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        {/* Category Distribution */}
+        <div className="bg-white dark:bg-zinc-900 p-8 rounded-[2.5rem] border border-zinc-200 dark:border-zinc-800 shadow-sm">
+          <div className="flex items-center justify-between mb-8">
+            <h3 className="text-xl font-black text-zinc-900 dark:text-white flex items-center gap-3">
+              <div className="p-2 bg-violet-600 rounded-xl">
+                <BarChart3 className="w-5 h-5 text-white" />
+              </div>
+              Content Categories
+            </h3>
+          </div>
+          <div className="h-[300px] w-full">
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
+                <Pie
+                  data={stats?.by_category || []}
+                  cx="50%"
+                  cy="50%"
+                  innerRadius={60}
+                  outerRadius={100}
+                  paddingAngle={5}
+                  dataKey="value"
+                >
+                  {(stats?.by_category || []).map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                  ))}
+                </Pie>
+                <Tooltip 
+                  contentStyle={{ 
+                    backgroundColor: '#18181b', 
+                    border: 'none', 
+                    borderRadius: '12px',
+                    color: '#fff',
+                    fontWeight: 'bold'
+                  }} 
+                />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+
+        {/* Verification Status Distribution */}
+        <div className="bg-white dark:bg-zinc-900 p-8 rounded-[2.5rem] border border-zinc-200 dark:border-zinc-800 shadow-sm">
+          <div className="flex items-center justify-between mb-8">
+            <h3 className="text-xl font-black text-zinc-900 dark:text-white flex items-center gap-3">
+              <div className="p-2 bg-fuchsia-600 rounded-xl">
+                <ShieldCheck className="w-5 h-5 text-white" />
+              </div>
+              Trust Distribution
+            </h3>
+          </div>
+          <div className="h-[300px] w-full">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={stats?.by_score || []}>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#3f3f46" />
+                <XAxis 
+                  dataKey="name" 
+                  axisLine={false} 
+                  tickLine={false} 
+                  tick={{ fill: '#71717a', fontWeight: 'bold' }}
+                />
+                <YAxis axisLine={false} tickLine={false} tick={{ fill: '#71717a', fontWeight: 'bold' }} />
+                <Tooltip 
+                  cursor={{ fill: 'rgba(139, 92, 246, 0.1)' }}
+                  contentStyle={{ 
+                    backgroundColor: '#18181b', 
+                    border: 'none', 
+                    borderRadius: '12px',
+                    color: '#fff',
+                    fontWeight: 'bold'
+                  }} 
+                />
+                <Bar dataKey="count" fill="#8b5cf6" radius={[8, 8, 0, 0]} barSize={40} />
+              </BarChart>
+            </ResponsiveContainer>
           </div>
         </div>
       </div>

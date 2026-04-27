@@ -21,20 +21,35 @@ interface HistoryItem {
   score: number;
   text: string;
   verdict: string;
+  category?: string;
+  relevance?: number;
 }
 
 export default function RecentScansPage() {
   const [history, setHistory] = useState<HistoryItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [filters, setFilters] = useState({
+    category: '',
+    minScore: 0,
+    search: ''
+  });
+
+  const categories = ['Politics', 'Technology', 'Health', 'Science', 'Business', 'Entertainment', 'General'];
 
   useEffect(() => {
     const fetchHistory = async () => {
+      setLoading(true);
       try {
         const token = getToken();
+        const params: any = { limit: 50 };
+        if (filters.category) params.category = filters.category;
+        if (filters.minScore > 0) params.min_score = filters.minScore;
+
         const response = await axios.get(
           `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1'}/dashboard/history`,
           {
-            headers: { Authorization: `Bearer ${token}` }
+            headers: { Authorization: `Bearer ${token}` },
+            params
           }
         );
         setHistory(response.data.verification_history || []);
@@ -44,8 +59,14 @@ export default function RecentScansPage() {
         setLoading(false);
       }
     };
-    fetchHistory();
-  }, []);
+    const debounceTimer = setTimeout(fetchHistory, 300);
+    return () => clearTimeout(debounceTimer);
+  }, [filters.category, filters.minScore]);
+
+  const filteredHistory = history.filter(item => 
+    item.text.toLowerCase().includes(filters.search.toLowerCase()) ||
+    (item.category && item.category.toLowerCase().includes(filters.search.toLowerCase()))
+  );
 
   const getScoreColor = (score: number) => {
     if (score >= 80) return 'text-emerald-500 bg-emerald-500/10 border-emerald-500/20';
@@ -62,18 +83,53 @@ export default function RecentScansPage() {
         </div>
       </div>
 
+      {/* Filters Bar */}
+      <div className="flex flex-wrap items-center gap-4 bg-white dark:bg-zinc-900 p-4 rounded-3xl border border-zinc-200 dark:border-zinc-800 shadow-sm">
+        <div className="relative flex-1 min-w-[200px]">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400" />
+          <input 
+            type="text"
+            placeholder="Search scans..."
+            value={filters.search}
+            onChange={(e) => setFilters(prev => ({ ...prev, search: e.target.value }))}
+            className="w-full bg-zinc-50 dark:bg-zinc-800/50 border-none rounded-xl py-2 pl-10 pr-4 text-sm font-medium focus:ring-2 focus:ring-violet-600 transition-all"
+          />
+        </div>
+        <select 
+          value={filters.category}
+          onChange={(e) => setFilters(prev => ({ ...prev, category: e.target.value }))}
+          className="bg-zinc-50 dark:bg-zinc-800/50 border-none rounded-xl py-2 px-4 text-sm font-bold focus:ring-2 focus:ring-violet-600 transition-all cursor-pointer"
+        >
+          <option value="">All Categories</option>
+          {categories.map(cat => <option key={cat} value={cat}>{cat}</option>)}
+        </select>
+        <div className="flex items-center gap-2 bg-zinc-50 dark:bg-zinc-800/50 px-4 py-2 rounded-xl">
+          <span className="text-xs font-black text-zinc-400 uppercase tracking-widest">Min Score</span>
+          <input 
+            type="range"
+            min="0"
+            max="100"
+            value={filters.minScore}
+            onChange={(e) => setFilters(prev => ({ ...prev, minScore: parseInt(e.target.value) }))}
+            className="w-24 accent-violet-600"
+          />
+          <span className="text-sm font-black text-violet-600 min-w-[2ch]">{filters.minScore}</span>
+        </div>
+      </div>
+
       <div className="bg-white dark:bg-zinc-900 rounded-[2.5rem] border border-zinc-200 dark:border-zinc-800 shadow-sm overflow-hidden">
-        {loading ? (
+        {loading && history.length === 0 ? (
           <div className="py-24 flex flex-col items-center justify-center text-zinc-400 gap-4">
             <Loader2 className="w-10 h-10 animate-spin text-violet-600" />
             <p className="font-black animate-pulse">Retrieving your records...</p>
           </div>
-        ) : history.length > 0 ? (
+        ) : filteredHistory.length > 0 ? (
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead>
                 <tr className="text-[10px] font-black uppercase tracking-widest text-zinc-400 border-b border-zinc-100 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-800/50">
                   <th className="px-8 py-5">Scan Date</th>
+                  <th className="px-8 py-5">Category</th>
                   <th className="px-8 py-5">Trust Score</th>
                   <th className="px-8 py-5">Content Sample</th>
                   <th className="px-8 py-5">Verdict</th>
@@ -81,7 +137,7 @@ export default function RecentScansPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-zinc-100 dark:divide-zinc-800">
-                {history.map((item, idx) => (
+                {filteredHistory.map((item, idx) => (
                   <motion.tr 
                     key={item.id}
                     initial={{ opacity: 0, y: 10 }}
@@ -98,21 +154,31 @@ export default function RecentScansPage() {
                       </div>
                     </td>
                     <td className="px-8 py-6">
-                      <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-black border ${getScoreColor(item.score)}`}>
+                      <span className="text-xs font-black px-2.5 py-1 bg-zinc-100 dark:bg-zinc-800 rounded-full text-zinc-500 uppercase tracking-wider">
+                        {item.category || 'General'}
+                      </span>
+                    </td>
+                    <td className="px-8 py-6">
+                      <div className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs font-black ${getScoreColor(item.score)}`}>
                         <ShieldCheck className="w-3.5 h-3.5" />
                         {item.score}%
                       </div>
                     </td>
-                    <td className="px-8 py-6">
-                      <p className="text-sm font-bold text-zinc-900 dark:text-white line-clamp-1 max-w-xs group-hover:text-violet-600 transition-colors">
+                    <td className="px-8 py-6 max-w-xs">
+                      <p className="text-sm font-medium text-zinc-900 dark:text-zinc-100 truncate">
                         {item.text}
                       </p>
                     </td>
                     <td className="px-8 py-6">
-                      <span className="text-xs font-black text-zinc-500 uppercase tracking-wider">{item.verdict}</span>
+                      <span className={`text-xs font-bold ${
+                        item.verdict === 'Highly Credible' ? 'text-emerald-600' : 
+                        item.verdict === 'Likely Misinformation' ? 'text-rose-600' : 'text-amber-600'
+                      }`}>
+                        {item.verdict}
+                      </span>
                     </td>
                     <td className="px-8 py-6 text-right">
-                      <button className="p-2 text-zinc-400 hover:text-violet-600 transition-colors">
+                      <button className="p-2 text-zinc-400 hover:text-violet-600 hover:bg-violet-50 dark:hover:bg-violet-900/20 rounded-xl transition-all">
                         <ArrowRight className="w-5 h-5" />
                       </button>
                     </td>
@@ -122,17 +188,14 @@ export default function RecentScansPage() {
             </table>
           </div>
         ) : (
-          <div className="py-24 flex flex-col items-center justify-center text-center px-6">
-            <div className="w-20 h-20 bg-zinc-100 dark:bg-zinc-800 rounded-full flex items-center justify-center mb-6">
-              <Search className="w-10 h-10 text-zinc-300" />
+          <div className="py-24 flex flex-col items-center justify-center text-zinc-400 gap-4">
+            <div className="p-4 bg-zinc-100 dark:bg-zinc-800 rounded-full">
+              <Search className="w-8 h-8" />
             </div>
-            <h3 className="text-xl font-black text-zinc-900 dark:text-white mb-2">No scans found</h3>
-            <p className="text-zinc-500 font-medium max-w-xs mx-auto mb-8">
-              You haven't verified any news yet. Start your first analysis to see it here.
-            </p>
-            <button className="px-8 py-4 bg-violet-600 text-white font-black rounded-2xl shadow-lg shadow-violet-500/20 hover:bg-violet-700 transition-all">
-              Start New Verification
-            </button>
+            <div className="text-center">
+              <p className="font-black text-zinc-900 dark:text-white">No scans found</p>
+              <p className="text-sm font-medium">Try adjusting your filters or verify some news first.</p>
+            </div>
           </div>
         )}
       </div>

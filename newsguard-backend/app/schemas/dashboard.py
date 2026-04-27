@@ -6,6 +6,8 @@ class StatsResponse(BaseModel):
     verifications_count: int
     saved_articles_count: int
     search_queries_count: int
+    by_category: Optional[List[Dict[str, Any]]] = None
+    by_score: Optional[List[Dict[str, Any]]] = None
 
 class HistoryItem(BaseModel):
     id: int
@@ -13,6 +15,8 @@ class HistoryItem(BaseModel):
     score: int
     text: str
     verdict: str
+    category: Optional[str] = None
+    relevance: Optional[int] = 0
 
 class DashboardHistoryResponse(BaseModel):
     verification_history: List[HistoryItem]

@@ -22,9 +22,25 @@ class ScraperService:
             # Extract main content using Trafilatura
             content = await loop.run_in_executor(None, trafilatura.extract, downloaded)
             
-            # Use BeautifulSoup for metadata extraction (Title, Image, etc.)
+            # Fallback to BeautifulSoup if Trafilatura fails to extract content
             soup = BeautifulSoup(downloaded, 'html.parser')
-            title = soup.title.string if soup.title else ''
+            if not content:
+                # Remove script and style elements
+                for script in soup(["script", "style"]):
+                    script.extract()
+                content = soup.get_text(separator='\n')
+                # Basic cleaning
+                lines = (line.strip() for line in content.splitlines())
+                chunks = (phrase.strip() for line in lines for phrase in line.split("  "))
+                content = '\n'.join(chunk for chunk in chunks if chunk)
+            
+            content = content or ""
+            
+            # Use BeautifulSoup for metadata extraction (Title, Image, etc.)
+            title = soup.title.string if soup.title and soup.title.string else ''
+            if not title:
+                h1 = soup.find('h1')
+                title = h1.get_text().strip() if h1 else ''
             
             # Parse the URL to get the source domain
             source = urlparse(url).netloc.replace('www.', '')

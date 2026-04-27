@@ -1,5 +1,5 @@
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, func
+from sqlalchemy import select, func, case
 from app.models.analysis import AnalysisResult
 from app.models.saved_article import SavedArticle
 from app.models.search_query import SearchQuery
@@ -28,17 +28,53 @@ class DashboardService:
             sq_stmt = sq_stmt.where(SearchQuery.user_id == user_id)
         sq_count = (await self.db.execute(sq_stmt)).scalar() or 0
 
+        # Categories distribution
+        cat_stmt = select(AnalysisResult.category, func.count(AnalysisResult.id)).group_by(AnalysisResult.category)
+        if user_id:
+            cat_stmt = cat_stmt.where(AnalysisResult.user_id == user_id)
+        cat_results = (await self.db.execute(cat_stmt)).all()
+        by_category = [{"name": r[0] or "General", "value": r[1]} for r in cat_results]
+
+        # Score distribution
+        score_stmt = select(
+            case(
+                (AnalysisResult.authenticity_score >= 80, "Credible"),
+                (AnalysisResult.authenticity_score >= 50, "Needs Review"),
+                else_="Misinformation"
+            ).label("status"),
+            func.count(AnalysisResult.id)
+        ).group_by("status")
+        if user_id:
+            score_stmt = score_stmt.where(AnalysisResult.user_id == user_id)
+        score_results = (await self.db.execute(score_stmt)).all()
+        by_score = [{"name": r[0], "count": r[1]} for r in score_results]
+
         return {
             "verifications_count": v_count,
             "saved_articles_count": sa_count,
-            "search_queries_count": sq_count
+            "search_queries_count": sq_count,
+            "by_category": by_category,
+            "by_score": by_score
         }
 
-    async def get_history(self, user_id: int = None) -> Dict[str, List[Any]]:
+    async def get_history(
+        self, 
+        user_id: int = None, 
+        category: str = None, 
+        min_score: int = None,
+        limit: int = 10
+    ) -> Dict[str, List[Any]]:
         # Verification History
-        v_stmt = select(AnalysisResult).order_by(AnalysisResult.created_at.desc()).limit(10)
+        v_stmt = select(AnalysisResult).order_by(AnalysisResult.created_at.desc())
+        
         if user_id:
             v_stmt = v_stmt.where(AnalysisResult.user_id == user_id)
+        if category:
+            v_stmt = v_stmt.where(AnalysisResult.category == category)
+        if min_score is not None:
+            v_stmt = v_stmt.where(AnalysisResult.authenticity_score >= min_score)
+            
+        v_stmt = v_stmt.limit(limit)
         v_results = (await self.db.execute(v_stmt)).scalars().all()
 
         verification_history = [
@@ -46,6 +82,8 @@ class DashboardService:
                 "id": r.id,
                 "date": r.created_at,
                 "score": r.authenticity_score,
+                "category": r.category,
+                "relevance": r.relevance_score,
                 "text": r.original_text[:100] + "..." if len(r.original_text) > 100 else r.original_text,
                 "verdict": r.verdict
             }

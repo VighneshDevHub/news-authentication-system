@@ -1,5 +1,5 @@
 import hashlib
-from typing import Dict, Any, List
+from typing import Dict, Any, List, Optional
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.services.search_service import SearchService
 from app.services.scraper_service import ScraperService
@@ -11,59 +11,90 @@ class AnalysisService:
         self.db = db
         self.llm = llm_provider
 
-    async def analyze_article(self, text: str, user_id: int = None) -> Dict[str, Any]:
-        """
-        Orchestrates the full analysis flow:
-        1. Extract Keywords (AI)
-        2. Search Google (External)
-        3. Scrape Content (External)
-        4. Verify Authenticity (AI)
-        5. Save Result (DB)
-        """
-        
+    async def analyze_article(self, text: str, user_id: int = None, url: Optional[str] = None) -> Dict[str, Any]:
+        # If URL provided, scrape it first to get the text
+        if url and not text.strip():
+            print(f"Scraping URL: {url}")
+            scraped = await ScraperService.fetch_multiple([url])
+            if scraped and scraped[0].get("content"):
+                text = scraped[0]["content"]
+            else:
+                text = url  # fallback
+
         # 1. Extract Keywords
-        print("Extracting keywords...")
         queries = await self.llm.extract_search_queries(text)
         if not queries:
-            # Fallback if AI fails: use first few words
-            queries = [text[:50]]
+            queries = [text[:100]]
+
+        # 2. Search Google - using all extracted queries for maximum coverage
+        search_urls = set()
+        for q in queries:
+            urls = await SearchService.google_search(q, num_results=5)
+            search_urls.update(urls)
         
-        # 2. Search Google (Use first query for now to save API calls)
-        print(f"Searching for: {queries[0]}")
-        urls = await SearchService.google_search(queries[0])
+        # Prioritize diverse sources (first result from each query)
+        diverse_urls = []
+        for q in queries:
+            urls = await SearchService.google_search(q, num_results=2)
+            for u in urls:
+                if u not in diverse_urls:
+                    diverse_urls.append(u)
         
+        unique_urls = list(dict.fromkeys(diverse_urls + list(search_urls)))[:8]
+
         # 3. Scrape Content
-        print(f"Scraping {len(urls)} articles...")
-        verified_articles = await ScraperService.fetch_multiple(urls[:3]) # Limit to top 3
-        
-        # 4. Verify Authenticity
-        print("Verifying authenticity...")
-        analysis_result = await self.llm.verify_authenticity(text, verified_articles)
-        
+        verified_articles = await ScraperService.fetch_multiple(unique_urls)
+
+        # 4. Multi-Stage Verification
+        # Stage 4.1: Extract Claims
+        claims_data = await self.llm.extract_claims(text)
+        claims = claims_data.get("claims", [])
+        category = claims_data.get("category", "General")
+
+        # Stage 4.2: Cross-Reference
+        verification_results = await self.llm.cross_reference(claims, verified_articles)
+
+        # Stage 4.3: Bias Detection
+        bias_result = await self.llm.detect_bias(text)
+
+        # Stage 4.4: Final Verdict
+        analysis_result = await self.llm.get_final_verdict(text, verification_results, bias_result)
+
         # 5. Save Result
-        print("Saving result...")
-        db_result = await self.save_result(text, analysis_result, user_id)
-        
+        db_result = await self.save_result(text, analysis_result, user_id, category)
+
         return {
             "id": db_result.id,
             "score": db_result.authenticity_score,
+            "category": category,
             "result": analysis_result,
+            "bias": bias_result,
             "key_points": queries,
-            "related_articles": verified_articles
+            "related_articles": verified_articles,
+            "relevance_score": analysis_result.get("relevance_score", 0)
         }
 
-    async def save_result(self, text: str, analysis: Dict[str, Any], user_id: int = None) -> AnalysisResult:
+    async def analyze_bias_only(self, text: str) -> Dict[str, Any]:
+        """Lightweight bias-only analysis without full verification pipeline."""
+        return await self.llm.detect_bias(text)
+
+    async def save_result(self, text: str, analysis: Dict[str, Any], user_id: int = None, category: str = "General") -> AnalysisResult:
         text_hash = hashlib.md5(text.encode()).hexdigest()
-        
+        score = analysis.get("authenticity_score", 0)
+        relevance = analysis.get("relevance_score", 0)
+        verdict = "Highly Credible" if score >= 80 else ("Needs Verification" if score >= 50 else "Likely Misinformation")
+
         result_entry = AnalysisResult(
             user_id=user_id,
             original_text=text,
             original_text_hash=text_hash,
-            authenticity_score=analysis.get("authenticity_score", 0),
-            verdict="Authentic" if analysis.get("authenticity_score", 0) > 70 else "Suspicious",
+            authenticity_score=score,
+            verdict=verdict,
+            category=category,
+            relevance_score=relevance,
             details=analysis
         )
-        
+
         self.db.add(result_entry)
         await self.db.commit()
         await self.db.refresh(result_entry)

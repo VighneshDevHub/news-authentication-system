@@ -14,7 +14,8 @@ import {
   X,
   User
 } from 'lucide-react';
-import { isAuthenticated, logout } from '@/utils/auth';
+import { useAuth } from '@/context/AuthContext';
+import AIAssistant from '@/components/AIAssistant';
 
 const menuItems = [
   { icon: LayoutDashboard, label: 'Overview', href: '/dashboard' },
@@ -30,14 +31,17 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
-  const router = useRouter();
+  const { user, logout, loading } = useAuth();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
-  useEffect(() => {
-    if (!isAuthenticated()) {
-      router.push('/signin');
-    }
-  }, [router]);
+  if (loading) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen space-y-4 bg-zinc-50 dark:bg-zinc-950">
+        <Shield className="w-12 h-12 text-violet-600 animate-pulse" />
+        <p className="text-zinc-500 font-medium">Verifying Session...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950 flex">
@@ -90,8 +94,8 @@ export default function DashboardLayout({
                 <User className="w-5 h-5" />
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-black text-zinc-900 dark:text-white truncate">User Account</p>
-                <p className="text-xs font-bold text-zinc-500 truncate">Pro Member</p>
+                <p className="text-sm font-black text-zinc-900 dark:text-white truncate">{user?.username || 'User Account'}</p>
+                <p className="text-xs font-bold text-zinc-500 truncate">{user?.role || 'Pro Member'}</p>
               </div>
             </div>
             <button
@@ -124,6 +128,7 @@ export default function DashboardLayout({
         <div className="p-4 lg:p-10 max-w-7xl mx-auto">
           {children}
         </div>
+        <AIAssistant initialMessage="Hello! I'm your NewsGuard assistant. How can I help you analyze the news today?" />
       </main>
     </div>
   );

@@ -23,6 +23,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import { getToken } from '@/utils/auth';
+import AIAssistant from '@/components/AIAssistant';
 
 function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -41,6 +42,7 @@ interface VerificationResult {
   }>;
   result: {
     authenticity_score: number;
+    verdict_summary?: string;
     key_findings: string[];
     differences: string[];
     supporting_evidence: Array<{
@@ -53,6 +55,14 @@ interface VerificationResult {
       detail_accuracy: number;
       context_accuracy: number;
     };
+  };
+  bias: {
+    overall_bias_score: number;
+    bias_direction: string;
+    bias_types: string[];
+    loaded_language: string[];
+    missing_perspectives: string[];
+    recommendation: string;
   };
 }
 
@@ -201,7 +211,7 @@ export default function NewsAnalyzer() {
                           </div>
                         ) : result.result.authenticity_score >= 50 ? (
                           <div className="flex items-center gap-1.5 px-3 py-1 bg-amber-50 dark:bg-amber-500/10 text-amber-600 rounded-full text-xs font-black uppercase tracking-widest">
-                            <Info className="w-3.5 h-3.5" />
+                            <ShieldAlert className="w-3.5 h-3.5" />
                             Needs Verification
                           </div>
                         ) : (
@@ -244,6 +254,18 @@ export default function NewsAnalyzer() {
                     </button>
                   </div>
                 </div>
+
+                {result.result.verdict_summary && (
+                  <div className="mb-12 p-6 bg-zinc-50 dark:bg-zinc-950 rounded-3xl border border-zinc-100 dark:border-zinc-800">
+                    <h4 className="text-xs font-black text-zinc-400 uppercase tracking-widest mb-3 flex items-center gap-2">
+                      <ShieldCheck className="w-4 h-4 text-violet-600" />
+                      Executive Verdict
+                    </h4>
+                    <p className="text-xl font-bold text-zinc-800 dark:text-zinc-200 leading-relaxed">
+                      {result.result.verdict_summary}
+                    </p>
+                  </div>
+                )}
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
                   <div className="space-y-8">
@@ -316,6 +338,45 @@ export default function NewsAnalyzer() {
                       </div>
                     </div>
 
+                    {/* Bias Analysis Section */}
+                    <div className="p-8 bg-zinc-50 dark:bg-zinc-950 rounded-[2rem] border border-zinc-200 dark:border-zinc-800">
+                      <h4 className="text-sm font-black text-zinc-400 uppercase tracking-widest mb-6 flex items-center gap-2">
+                        <ShieldAlert className="w-4 h-4 text-amber-500" />
+                        Bias Analysis
+                      </h4>
+                      <div className="space-y-6">
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm font-bold text-zinc-600">Bias Score</span>
+                          <span className={cn(
+                            "px-3 py-1 rounded-full text-xs font-black",
+                            result.bias.overall_bias_score < 30 ? "bg-emerald-100 text-emerald-700" : 
+                            result.bias.overall_bias_score < 70 ? "bg-amber-100 text-amber-700" : 
+                            "bg-rose-100 text-rose-700"
+                          )}>
+                            {result.bias.overall_bias_score}%
+                          </span>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm font-bold text-zinc-600">Direction</span>
+                          <span className="text-sm font-black text-zinc-900 dark:text-white uppercase tracking-wider">
+                            {result.bias.bias_direction}
+                          </span>
+                        </div>
+                        {result.bias.bias_types?.length > 0 && (
+                          <div className="flex flex-wrap gap-2">
+                            {result.bias.bias_types.map((type, i) => (
+                              <span key={i} className="px-2 py-1 bg-zinc-200 dark:bg-zinc-800 rounded text-[10px] font-bold text-zinc-600 dark:text-zinc-400 uppercase">
+                                {type}
+                              </span>
+                            ))}
+                          </div>
+                        )}
+                        <p className="text-sm text-zinc-500 font-medium italic">
+                          "{result.bias.recommendation}"
+                        </p>
+                      </div>
+                    </div>
+
                     <div className="p-8 bg-violet-600 rounded-3xl text-white relative overflow-hidden group">
                       <div className="absolute top-0 right-0 p-4 opacity-20 group-hover:scale-110 transition-transform">
                         <Zap className="w-24 h-24" />
@@ -370,6 +431,14 @@ export default function NewsAnalyzer() {
                   </motion.a>
                 ))}
               </div>
+            </div>
+
+            {/* AIAssistant for specific analysis */}
+            <div className="mt-12">
+              <AIAssistant 
+                analysisId={result.id} 
+                initialMessage={`I've analyzed this article (Score: ${result.result.authenticity_score}%). Feel free to ask me anything about these findings!`}
+              />
             </div>
           </motion.div>
         )}

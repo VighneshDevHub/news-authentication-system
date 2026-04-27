@@ -6,10 +6,11 @@ import { useRouter } from 'next/navigation';
 import { Shield, User, Lock, ArrowRight, Loader2, AlertCircle } from 'lucide-react';
 import Navbar from '@/components/Navbar';
 import axios from 'axios';
-import { setToken } from '@/utils/auth';
+import { useAuth } from '@/context/AuthContext';
 
 export default function SignInPage() {
   const router = useRouter();
+  const { login } = useAuth();
   const [formData, setFormData] = useState({
     username: '',
     password: '',
@@ -38,8 +39,7 @@ export default function SignInPage() {
         }
       );
 
-      setToken(response.data.access_token);
-      router.push('/dashboard');
+      await login(response.data.access_token);
     } catch (err: any) {
       setError(err.response?.data?.detail || 'Invalid username or password');
     } finally {

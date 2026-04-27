@@ -17,6 +17,8 @@ class AnalysisResult(Base):
     # Analysis Outcome
     authenticity_score = Column(Integer, nullable=False) # 0-100
     verdict = Column(String, nullable=True) # e.g. "Likely Authentic"
+    category = Column(String, index=True, nullable=True) # e.g. "Politics", "Tech"
+    relevance_score = Column(Integer, default=0)
     
     # Detailed Breakdown (JSONB for flexibility)
     # Stores: key_findings, differences, supporting_evidence, score_breakdown

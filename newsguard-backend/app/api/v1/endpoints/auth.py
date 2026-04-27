@@ -12,7 +12,7 @@ from app.core.config import settings
 from app.db.session import get_db
 from app.models.user import User
 from app.schemas.token import Token
-from app.schemas.user import UserCreate, User as UserSchema
+from app.schemas.user import UserCreate, UserUpdate, User as UserSchema
 
 router = APIRouter()
 
@@ -79,7 +79,35 @@ async def create_user(
 async def read_user_me(
     current_user: User = Depends(deps.get_current_user),
 ) -> Any:
-    """
-    Get current user.
-    """
+    """Get current user."""
+    return current_user
+
+@router.patch("/me", response_model=UserSchema)
+async def update_user_me(
+    *,
+    db: AsyncSession = Depends(get_db),
+    user_in: UserUpdate,
+    current_user: User = Depends(deps.get_current_user),
+) -> Any:
+    """Update current user profile."""
+    if user_in.email is not None:
+        existing = await db.execute(select(User).where(User.email == user_in.email, User.id != current_user.id))
+        if existing.scalars().first():
+            raise HTTPException(status_code=400, detail="Email already in use.")
+        current_user.email = user_in.email
+
+    if user_in.username is not None:
+        existing = await db.execute(select(User).where(User.username == user_in.username, User.id != current_user.id))
+        if existing.scalars().first():
+            raise HTTPException(status_code=400, detail="Username already in use.")
+        current_user.username = user_in.username
+
+    if user_in.password is not None:
+        current_user.hashed_password = security.get_password_hash(user_in.password)
+    
+    if user_in.preferences is not None:
+        current_user.preferences = user_in.preferences
+
+    await db.commit()
+    await db.refresh(current_user)
     return current_user
