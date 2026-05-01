@@ -122,6 +122,12 @@ newsguard-frontend/
 
 ---
 
+## 🚢 Deployment
+
+For production deployment instructions, including Vercel and Docker, please see the [Main Deployment Guide](../DEPLOYMENT_GUIDE.md).
+
+---
+
 ## 🎨 Pages & Routes
 
 ### Public Routes

@@ -173,7 +173,11 @@ newsguard-backend/
 
 ---
 
-## 📡 API Reference
+## 🚢 Deployment
+
+For production deployment instructions, including Docker and cloud hosting, please see the [Main Deployment Guide](../DEPLOYMENT_GUIDE.md).
+
+---
 
 ### Base URL
 ```

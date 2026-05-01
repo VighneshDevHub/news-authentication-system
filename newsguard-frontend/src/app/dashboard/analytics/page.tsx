@@ -38,9 +38,19 @@ import { getToken } from '@/utils/auth';
 
 const COLORS = ['#6366f1', '#a855f7', '#ec4899', '#f43f5e', '#f59e0b'];
 
+interface AnalyticsData {
+  name: string;
+  value: number;
+}
+
+interface Stats {
+  by_score: AnalyticsData[];
+  by_category: AnalyticsData[];
+}
+
 export default function AnalyticsPage() {
   const [activeTab, setActiveTab] = useState<'trends' | 'scope'>('trends');
-  const [stats, setStats] = useState<any>(null);
+  const [stats, setStats] = useState<Stats | null>(null);
   const [loading, setLoading] = useState(true);
 
   React.useEffect(() => {
@@ -166,7 +176,7 @@ export default function AnalyticsPage() {
                     contentStyle={{ borderRadius: '16px', border: 'none', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)', fontWeight: 900 }}
                   />
                   <Bar dataKey="value" radius={[10, 10, 0, 0]}>
-                    {scoreData.map((entry, index) => (
+                    {scoreData.map((entry: AnalyticsData, index: number) => (
                       <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                     ))}
                   </Bar>
@@ -198,7 +208,7 @@ export default function AnalyticsPage() {
                     paddingAngle={5}
                     dataKey="value"
                   >
-                    {categoryData.map((entry, index) => (
+                    {categoryData.map((entry: AnalyticsData, index: number) => (
                       <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                     ))}
                   </Pie>
@@ -207,7 +217,7 @@ export default function AnalyticsPage() {
               </ResponsiveContainer>
             </div>
             <div className="flex flex-wrap justify-center gap-4 mt-4">
-              {categoryData.map((item, i) => (
+              {categoryData.map((item: AnalyticsData, i: number) => (
                 <div key={i} className="flex items-center gap-2">
                   <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: COLORS[i % COLORS.length] }} />
                   <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">{item.name}</span>
