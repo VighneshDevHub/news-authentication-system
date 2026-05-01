@@ -20,49 +20,49 @@ export default function Navbar() {
   }, []);
 
   return (
-    <nav className={`fixed w-full z-50 top-0 left-0 transition-all duration-300 ${
+    <nav className={`fixed w-full z-50 top-0 left-0 transition-all duration-500 ${
       scrolled 
-        ? 'bg-white/80 dark:bg-zinc-950/80 backdrop-blur-md border-b border-slate-200 dark:border-zinc-800 py-3' 
-        : 'bg-transparent py-5'
+        ? 'bg-white/70 dark:bg-zinc-950/70 backdrop-blur-xl border-b border-slate-200 dark:border-zinc-800/50 py-3 shadow-sm' 
+        : 'bg-transparent py-6'
     }`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2.5 group">
-            <div className="p-2 bg-indigo-600 rounded-xl group-hover:scale-110 transition-transform">
+          <Link href="/" className="flex items-center gap-3 group">
+            <div className="p-2 bg-indigo-600 rounded-xl group-hover:scale-110 transition-all duration-300 shadow-lg shadow-indigo-600/20">
               <Shield className="w-6 h-6 text-white" />
             </div>
-            <span className="text-xl font-heading font-black text-slate-900 dark:text-white tracking-tight">
+            <span className="text-xl font-heading font-black text-slate-900 dark:text-white tracking-tighter">
               NewsGuard AI
             </span>
           </Link>
 
           {/* Desktop Menu */}
           <div className="hidden md:flex items-center gap-10">
-            <div className="flex items-center gap-8 text-sm font-heading font-bold text-slate-600 dark:text-slate-400">
-              <Link href="#features" className="hover:text-indigo-600 transition-colors">Features</Link>
-              <Link href="#pricing" className="hover:text-indigo-600 transition-colors">Pricing</Link>
-              <Link href="#" className="hover:text-indigo-600 transition-colors">Documentation</Link>
+            <div className="flex items-center gap-8 text-[13px] font-black uppercase tracking-widest text-slate-500 dark:text-zinc-500">
+              <Link href="#features" className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">Features</Link>
+              <Link href="#pricing" className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">Pricing</Link>
+              <Link href="#" className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">Docs</Link>
             </div>
             
-            <div className="flex items-center gap-4 border-l border-slate-200 dark:border-zinc-800 pl-8">
+            <div className="flex items-center gap-6 border-l border-slate-200 dark:border-zinc-800/50 pl-8">
               <ThemeToggle />
               {isAuthenticated ? (
                 <Link 
                   href="/dashboard" 
-                  className="inline-flex items-center justify-center gap-2 px-6 py-2.5 text-sm font-heading font-black text-white bg-indigo-600 rounded-xl hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-600/20 active:scale-95"
+                  className="inline-flex items-center justify-center gap-2 px-6 py-3 text-[11px] font-black uppercase tracking-widest text-white bg-indigo-600 rounded-xl hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-600/20 active:scale-95"
                 >
                   <LayoutDashboard className="w-4 h-4" />
                   Dashboard
                 </Link>
               ) : (
                 <>
-                  <Link href="/signin" className="text-sm font-heading font-black text-slate-600 dark:text-slate-400 hover:text-indigo-600 transition-colors">
+                  <Link href="/signin" className="text-[11px] font-black uppercase tracking-widest text-slate-600 dark:text-zinc-400 hover:text-indigo-600 transition-colors">
                     Log In
                   </Link>
                   <Link 
                     href="/signup" 
-                    className="inline-flex items-center justify-center gap-2 px-6 py-2.5 text-sm font-heading font-black text-white bg-indigo-600 rounded-xl hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-600/20 active:scale-95"
+                    className="inline-flex items-center justify-center gap-2 px-6 py-3 text-[11px] font-black uppercase tracking-widest text-white bg-indigo-600 rounded-xl hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-600/20 active:scale-95"
                   >
                     Start for Free
                     <ChevronRight className="w-4 h-4" />

@@ -4,7 +4,7 @@
   --font-sans: var(--font-inter), ui-sans-serif, system-ui;
   --font-heading: var(--font-plus-jakarta), var(--font-inter), ui-sans-serif;
   --font-mono: var(--font-mono), ui-monospace, SFMono-Regular;
-  
+
   --color-primary: #4f46e5; /* Indigo-600 */
   --color-primary-dark: #4338ca; /* Indigo-700 */
   --color-secondary: #64748b; /* Slate-500 */
@@ -72,30 +72,85 @@
 }
 
 .glass-morphism {
-  background: rgba(255, 255, 255, 0.02);
+  background: rgba(255, 255, 255, 0.7);
   backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
 .dark .glass-morphism {
-  background: rgba(0, 0, 0, 0.3);
-  border: 1px solid rgba(255, 255, 255, 0.03);
+  background: rgba(9, 9, 11, 0.6);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(39, 39, 42, 0.5);
+}
+
+.text-gradient {
+  background: linear-gradient(135deg, #4f46e5 0%, #a855f7 50%, #ec4899 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.border-gradient {
+  border: 1px solid transparent;
+  background:
+    linear-gradient(white, white) padding-box,
+    linear-gradient(135deg, #4f46e5 0%, #a855f7 100%) border-box;
+}
+
+.dark .border-gradient {
+  background:
+    linear-gradient(#09090b, #09090b) padding-box,
+    linear-gradient(135deg, #4f46e5 0%, #a855f7 100%) border-box;
 }
 
 .hero-gradient {
   background: radial-gradient(
     circle at top center,
-    rgba(139, 92, 246, 0.12) 0%,
-    transparent 60%
+    rgba(79, 70, 229, 0.15) 0%,
+    rgba(168, 85, 247, 0.05) 40%,
+    transparent 70%
   );
 }
 
 .dark .hero-gradient {
   background: radial-gradient(
     circle at top center,
-    rgba(139, 92, 246, 0.05) 0%,
-    transparent 60%
+    rgba(79, 70, 229, 0.1) 0%,
+    rgba(168, 85, 247, 0.02) 40%,
+    transparent 70%
   );
+}
+
+.animate-glow {
+  animation: glow 4s ease-in-out infinite alternate;
+}
+
+@keyframes glow {
+  from {
+    box-shadow: 0 0 10px -5px rgba(79, 70, 229, 0.5);
+  }
+  to {
+    box-shadow: 0 0 20px 2px rgba(79, 70, 229, 0.3);
+  }
+}
+
+.card-hover-effect {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.card-hover-effect:hover {
+  transform: translateY(-4px);
+  box-shadow:
+    0 20px 25px -5px rgba(0, 0, 0, 0.1),
+    0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  border-color: rgba(79, 70, 229, 0.2);
+}
+
+.dark .card-hover-effect:hover {
+  box-shadow:
+    0 20px 25px -5px rgba(0, 0, 0, 0.3),
+    0 10px 10px -5px rgba(0, 0, 0, 0.2);
+  border-color: rgba(79, 70, 229, 0.4);
 }
 
 .animate-glow {

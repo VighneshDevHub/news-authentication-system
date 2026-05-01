@@ -122,16 +122,18 @@ export default function AIAssistant({ context, initialMessage, analysisId }: AIA
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
           onClick={() => setIsOpen(true)}
-          className="fixed bottom-8 right-8 p-4 bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.2)] dark:shadow-[0_20px_50px_rgba(255,255,255,0.1)] z-50 flex items-center gap-3 border border-white/10 dark:border-zinc-200"
+          className="fixed bottom-10 right-10 p-5 bg-slate-900 dark:bg-white text-white dark:text-zinc-950 rounded-[2rem] shadow-2xl z-50 flex items-center gap-4 border border-white/10 dark:border-zinc-200 transition-all active:scale-95 group"
         >
           <div className="relative">
-            <MessageSquare className="w-6 h-6" />
-            <span className="absolute -top-1 -right-1 flex h-2 w-2">
+            <div className="p-2 bg-indigo-600 rounded-xl group-hover:rotate-12 transition-transform">
+              <MessageSquare className="w-6 h-6 text-white" />
+            </div>
+            <span className="absolute -top-1 -right-1 flex h-3 w-3">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-indigo-500"></span>
+              <span className="relative inline-flex rounded-full h-3 w-3 bg-indigo-500 border-2 border-slate-900 dark:border-white"></span>
             </span>
           </div>
-          <span className="font-bold text-sm tracking-tight">Chat with Assistant</span>
+          <span className="font-black text-xs uppercase tracking-[0.2em]">Neural Support</span>
         </motion.button>
       )}
 
@@ -145,57 +147,57 @@ export default function AIAssistant({ context, initialMessage, analysisId }: AIA
               y: 0, 
               scale: 1,
               filter: 'blur(0px)',
-              width: isMaximized ? 'calc(100vw - 64px)' : '420px',
-              height: isMaximized ? 'calc(100vh - 64px)' : '680px',
-              maxWidth: isMaximized ? '1200px' : '420px',
+              width: isMaximized ? 'calc(100vw - 80px)' : '440px',
+              height: isMaximized ? 'calc(100vh - 80px)' : '720px',
+              maxWidth: isMaximized ? '1400px' : '440px',
             }}
             exit={{ opacity: 0, y: 40, scale: 0.95, filter: 'blur(10px)' }}
-            className="fixed bottom-8 right-8 bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-[2rem] shadow-[0_30px_100px_rgba(0,0,0,0.15)] dark:shadow-none z-50 flex flex-col overflow-hidden transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)]"
+            className="fixed bottom-10 right-10 glass-morphism p-1 rounded-[3rem] border-gradient shadow-[0_50px_100px_-20px_rgba(0,0,0,0.3)] z-50 flex flex-col overflow-hidden transition-all duration-700 ease-[cubic-bezier(0.23,1,0.32,1)]"
           >
-            {/* Elegant Header */}
-            <div className="px-6 py-5 border-b border-zinc-100 dark:border-zinc-900 flex items-center justify-between bg-white/80 dark:bg-zinc-950/80 backdrop-blur-xl sticky top-0 z-10">
-              <div className="flex items-center gap-4">
-                <div className="relative">
-                  <div className="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center shadow-lg shadow-indigo-500/20">
-                    <Bot className="w-6 h-6 text-white" />
+            <div className="bg-white dark:bg-zinc-950 rounded-[2.8rem] flex flex-col h-full overflow-hidden">
+              {/* Elegant Header */}
+              <div className="px-8 py-6 border-b border-slate-100 dark:border-zinc-900 flex items-center justify-between bg-white/50 dark:bg-zinc-950/50 backdrop-blur-xl sticky top-0 z-10">
+                <div className="flex items-center gap-5">
+                  <div className="relative">
+                    <div className="w-12 h-12 bg-indigo-600 rounded-2xl flex items-center justify-center shadow-lg shadow-indigo-600/20 animate-glow">
+                      <Bot className="w-7 h-7 text-white" />
+                    </div>
+                    <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-emerald-500 border-2 border-white dark:border-zinc-950 rounded-full shadow-sm"></div>
                   </div>
-                  <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-emerald-500 border-2 border-white dark:border-zinc-950 rounded-full"></div>
+                  <div>
+                    <h3 className="text-base font-black text-slate-900 dark:text-white flex items-center gap-2 tracking-tight">
+                      NewsGuard AI
+                      <span className="px-2 py-0.5 bg-indigo-600 text-[9px] text-white font-black rounded-md uppercase tracking-widest shadow-sm">Pro</span>
+                    </h3>
+                    <p className="text-[10px] font-black text-slate-400 dark:text-zinc-600 uppercase tracking-[0.2em] flex items-center gap-2">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                      Neural Core Online
+                    </p>
+                  </div>
                 </div>
-                <div>
-                  <h3 className="text-sm font-black text-zinc-900 dark:text-white flex items-center gap-1.5">
-                    NewsGuard AI
-                    <span className="px-1.5 py-0.5 bg-indigo-50 dark:bg-indigo-900/30 text-[9px] text-indigo-600 dark:text-indigo-400 rounded-md uppercase tracking-tighter">Pro</span>
-                  </h3>
-                  <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest flex items-center gap-1">
-                    Neural Assistant
-                    <span className="w-1 h-1 rounded-full bg-zinc-300 dark:bg-zinc-700"></span>
-                    Online
-                  </p>
+                
+                <div className="flex items-center gap-2">
+                  <button 
+                    onClick={() => setIsMaximized(!isMaximized)}
+                    className="p-2.5 text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-slate-50 dark:hover:bg-zinc-900 rounded-xl transition-all"
+                  >
+                    {isMaximized ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
+                  </button>
+                  <button 
+                    onClick={clearHistory}
+                    className="p-2.5 text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-slate-50 dark:hover:bg-zinc-900 rounded-xl transition-all"
+                  >
+                    <RefreshCcw className="w-4 h-4" />
+                  </button>
+                  <div className="w-[1px] h-5 bg-slate-200 dark:bg-zinc-900 mx-2"></div>
+                  <button 
+                    onClick={() => setIsOpen(false)}
+                    className="p-2.5 text-slate-400 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/30 rounded-xl transition-all"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
                 </div>
               </div>
-              
-              <div className="flex items-center gap-1">
-                <button 
-                  onClick={() => setIsMaximized(!isMaximized)}
-                  className="p-2 text-zinc-400 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-900 rounded-xl transition-all"
-                >
-                  {isMaximized ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
-                </button>
-                <button 
-                  onClick={clearHistory}
-                  className="p-2 text-zinc-400 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-900 rounded-xl transition-all"
-                >
-                  <RefreshCcw className="w-4 h-4" />
-                </button>
-                <div className="w-[1px] h-4 bg-zinc-200 dark:bg-zinc-800 mx-1"></div>
-                <button 
-                  onClick={() => setIsOpen(false)}
-                  className="p-2 text-zinc-400 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/30 rounded-xl transition-all"
-                >
-                  <X className="w-4 h-4" />
-                </button>
-              </div>
-            </div>
 
             {/* Message Area */}
             <div 
@@ -360,9 +362,10 @@ export default function AIAssistant({ context, initialMessage, analysisId }: AIA
                 <Info className="w-2.5 h-2.5 ml-1 opacity-50 cursor-help" />
               </div>
             </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+          </div>
+        </motion.div>
+      )}
+    </AnimatePresence>
 
       {/* Global CSS for scrollbar */}
       <style jsx global>{`

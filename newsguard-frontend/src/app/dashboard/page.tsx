@@ -22,7 +22,9 @@ import {
 } from 'lucide-react';
 import axios from 'axios';
 import { useAuth } from '@/context/AuthContext';
+import { useTheme } from '@/context/ThemeContext';
 import { motion, AnimatePresence } from 'framer-motion';
+import { cn } from '@/utils/cn';
 import { 
   AreaChart, 
   Area, 
@@ -59,6 +61,7 @@ interface HistoryItem {
 
 export default function DashboardPage() {
   const { user } = useAuth();
+  const { theme } = useTheme();
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [history, setHistory] = useState<HistoryItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -112,43 +115,46 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="space-y-8 pb-12">
+    <div className="space-y-12 pb-12 font-sans">
       {/* Welcome Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div>
-          <h2 className="text-3xl font-heading font-bold text-slate-900 dark:text-white">Dashboard</h2>
-          <p className="text-slate-500 dark:text-zinc-400 font-medium">Welcome back, {user?.username}. Here's what's happening today.</p>
+          <p className="text-[10px] font-black text-indigo-600 dark:text-indigo-400 uppercase tracking-[0.3em] mb-4">Central Intelligence</p>
+          <h2 className="text-4xl lg:text-5xl font-black text-slate-900 dark:text-white tracking-tighter leading-none">
+            Welcome back, <span className="text-gradient">{user?.username}</span>
+          </h2>
+          <p className="text-sm text-slate-500 dark:text-zinc-500 font-bold mt-4">Neural Systems are online. All verification modules operational.</p>
         </div>
         <Link 
           href="/dashboard/verify"
-          className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-indigo-600 text-white font-heading font-bold rounded-xl hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-600/20 active:scale-95"
+          className="inline-flex items-center justify-center gap-3 px-8 py-4 bg-indigo-600 text-white font-black rounded-2xl hover:bg-indigo-700 transition-all shadow-xl shadow-indigo-600/20 active:scale-95 text-[11px] uppercase tracking-widest"
         >
           <Search className="w-5 h-5" />
-          New Verification
+          Run Neural Scan
         </Link>
       </div>
 
-      {/* Main Stats */}
+      {/* Main Stats - Elevated Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {[
-          { label: 'Total Scans', value: stats?.verifications_count || 0, icon: Search, color: 'text-blue-600 bg-blue-50 dark:bg-blue-500/10' },
-          { label: 'Avg. Accuracy', value: `${stats?.average_score || 0}%`, icon: Activity, color: 'text-indigo-600 bg-indigo-50 dark:bg-indigo-500/10' },
-          { label: 'Saved Articles', value: stats?.saved_articles_count || 0, icon: Bookmark, color: 'text-emerald-600 bg-emerald-50 dark:bg-emerald-500/10' },
-          { label: 'Search Queries', value: stats?.search_queries_count || 0, icon: FileText, color: 'text-rose-600 bg-rose-50 dark:bg-rose-500/10' },
+          { label: 'Total Scans', value: stats?.verifications_count || 0, icon: Search, color: 'text-blue-500', bg: 'bg-blue-500/10' },
+          { label: 'Avg. Accuracy', value: `${stats?.average_score || 0}%`, icon: Activity, color: 'text-indigo-500', bg: 'bg-indigo-500/10' },
+          { label: 'Saved Articles', value: stats?.saved_articles_count || 0, icon: Bookmark, color: 'text-emerald-500', bg: 'bg-emerald-500/10' },
+          { label: 'Search Queries', value: stats?.search_queries_count || 0, icon: FileText, color: 'text-rose-500', bg: 'bg-rose-500/10' },
         ].map((stat, i) => (
           <motion.div 
             key={i}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: i * 0.1 }}
-            className="p-6 bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-2xl flex items-center gap-5 group hover:border-indigo-500/30 transition-all"
+            className="p-8 bg-white dark:bg-zinc-950 border border-slate-200 dark:border-zinc-900 rounded-[2.5rem] flex flex-col gap-6 group hover:border-indigo-500/30 transition-all card-hover-effect shadow-sm"
           >
-            <div className={`w-14 h-14 rounded-xl flex items-center justify-center ${stat.color} group-hover:scale-110 transition-transform`}>
+            <div className={cn("w-14 h-14 rounded-2xl flex items-center justify-center transition-transform group-hover:scale-110 shadow-sm", stat.bg, stat.color)}>
               <stat.icon className="w-7 h-7" />
             </div>
             <div>
-              <p className="text-sm font-heading font-bold text-slate-500 dark:text-zinc-500 uppercase tracking-wider">{stat.label}</p>
-              <p className="text-2xl font-heading font-bold text-slate-900 dark:text-white">{stat.value}</p>
+              <p className="text-[10px] font-black text-slate-400 dark:text-zinc-600 uppercase tracking-[0.2em] mb-1">{stat.label}</p>
+              <p className="text-4xl font-black text-slate-900 dark:text-white tracking-tighter">{stat.value}</p>
             </div>
           </motion.div>
         ))}
@@ -159,41 +165,44 @@ export default function DashboardPage() {
         <motion.div 
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
-          className="lg:col-span-2 p-8 bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-[2rem]"
+          className="lg:col-span-2 p-10 bg-white dark:bg-zinc-950 border border-slate-200 dark:border-zinc-900 rounded-[3rem] shadow-sm relative overflow-hidden"
         >
-          <div className="flex items-center justify-between mb-8">
-            <h3 className="text-lg font-heading font-bold text-slate-900 dark:text-white flex items-center gap-2">
-              <TrendingUp className="w-5 h-5 text-indigo-500" />
-              Verification Activity
-            </h3>
+          <div className="flex items-center justify-between mb-12">
+            <div>
+              <h3 className="text-xl font-black text-slate-900 dark:text-white tracking-tight flex items-center gap-3">
+                <div className="w-2 h-2 rounded-full bg-indigo-600 animate-pulse" />
+                Verification Activity
+              </h3>
+              <p className="text-[10px] font-black text-slate-400 dark:text-zinc-600 uppercase tracking-[0.2em] mt-2">Historical scan volume across nodes</p>
+            </div>
             <select 
               value={days}
               onChange={(e) => setDays(Number(e.target.value))}
-              className="bg-slate-50 dark:bg-zinc-800 border-none rounded-lg text-xs font-heading font-bold px-3 py-2 outline-none cursor-pointer"
+              className="bg-slate-50 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-xl text-[10px] font-black uppercase tracking-widest px-4 py-2.5 outline-none cursor-pointer hover:border-indigo-500/30 transition-all"
             >
-              <option value={7}>Last 7 Days</option>
-              <option value={30}>Last 30 Days</option>
-              <option value={90}>Last 90 Days</option>
+              <option value={7}>7 Days</option>
+              <option value={30}>30 Days</option>
+              <option value={90}>90 Days</option>
             </select>
           </div>
           
-          <div className="h-[300px] w-full">
+          <div className="h-[340px] w-full">
             {stats?.activity_data && stats.activity_data.length > 0 ? (
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={stats.activity_data}>
                   <defs>
                     <linearGradient id="colorScans" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#6366f1" stopOpacity={0.1}/>
+                      <stop offset="5%" stopColor="#6366f1" stopOpacity={0.2}/>
                       <stop offset="95%" stopColor="#6366f1" stopOpacity={0}/>
                     </linearGradient>
                   </defs>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={theme === 'dark' ? '#18181b' : '#f1f5f9'} />
                   <XAxis 
                     dataKey="date" 
                     axisLine={false} 
                     tickLine={false} 
-                    tick={{ fontSize: 10, fontWeight: 700, fill: '#94a3b8' }} 
-                    dy={10}
+                    tick={{ fontSize: 9, fontWeight: 900, fill: '#94a3b8' }} 
+                    dy={15}
                   />
                   <YAxis 
                     axisLine={false} 

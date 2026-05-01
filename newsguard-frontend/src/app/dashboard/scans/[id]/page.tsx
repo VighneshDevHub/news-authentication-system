@@ -20,15 +20,11 @@ import {
   ArrowUpRight
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { clsx, type ClassValue } from 'clsx';
-import { twMerge } from 'tailwind-merge';
 import { getToken } from '@/utils/auth';
+import { cn } from '@/utils/cn';
 import AIAssistant from '@/components/AIAssistant';
 import Link from 'next/link';
-
-function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs));
-}
+import { MessageSquare } from 'lucide-react';
 
 interface VerificationResult {
   id: number;
@@ -411,6 +407,36 @@ export default function ScanDetailPage() {
                 </div>
               </motion.a>
             ))}
+          </div>
+        </div>
+
+        {/* Integrated Chat Section */}
+        <div className="pt-12 border-t border-slate-100 dark:border-zinc-900">
+          <div className="bg-indigo-600 rounded-[3rem] p-12 text-white relative overflow-hidden group">
+            <div className="absolute top-0 right-0 p-12 opacity-10 group-hover:scale-110 transition-transform duration-700">
+              <MessageSquare className="w-64 h-64" />
+            </div>
+            <div className="relative z-10 max-w-2xl">
+              <h3 className="text-3xl font-black mb-4 tracking-tight">Interactive Audit Chat</h3>
+              <p className="text-indigo-100 font-bold text-lg mb-8 leading-relaxed">
+                Need more details on this specific report? Start a contextual chat session with our Neural Assistant to dive deeper into the bias patterns and source metadata.
+              </p>
+              <button 
+                onClick={() => {
+                  const assistantBtn = document.querySelector('button[aria-label="Toggle AIAssistant"]') as HTMLButtonElement;
+                  if (assistantBtn) assistantBtn.click();
+                  else {
+                    // Fallback to finding the floating button by class if needed
+                    const floatingBtn = document.querySelector('.fixed.bottom-10.right-10') as HTMLButtonElement;
+                    if (floatingBtn) floatingBtn.click();
+                  }
+                }}
+                className="px-10 py-5 bg-white text-indigo-600 font-black rounded-2xl shadow-2xl shadow-indigo-950/20 hover:bg-indigo-50 transition-all active:scale-95 flex items-center gap-3 uppercase tracking-widest text-sm"
+              >
+                <MessageSquare className="w-5 h-5" />
+                Initialize Neural Chat
+              </button>
+            </div>
           </div>
         </div>
 

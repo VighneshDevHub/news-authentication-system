@@ -22,10 +22,13 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     const initialTheme = savedTheme || systemTheme;
     setTheme(initialTheme);
     
+    // Apply theme immediately to document element
     if (initialTheme === 'dark') {
       document.documentElement.classList.add('dark');
+      document.documentElement.style.colorScheme = 'dark';
     } else {
       document.documentElement.classList.remove('dark');
+      document.documentElement.style.colorScheme = 'light';
     }
     
     setMounted(true);
@@ -38,13 +41,21 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     
     if (newTheme === 'dark') {
       document.documentElement.classList.add('dark');
+      document.documentElement.style.colorScheme = 'dark';
     } else {
       document.documentElement.classList.remove('dark');
+      document.documentElement.style.colorScheme = 'light';
     }
   };
 
+  // Prevent hydration mismatch by not rendering anything theme-specific until mounted
+  const value = {
+    theme: mounted ? theme : 'light',
+    toggleTheme
+  };
+
   return (
-    <ThemeContext.Provider value={{ theme, toggleTheme }}>
+    <ThemeContext.Provider value={value}>
       {children}
     </ThemeContext.Provider>
   );

@@ -16,6 +16,7 @@ import {
 import axios from 'axios';
 import { getToken } from '@/utils/auth';
 import { motion, AnimatePresence } from 'framer-motion';
+import Link from 'next/link';
 
 interface SavedArticle {
   id: number;
@@ -76,49 +77,54 @@ export default function LibraryPage() {
   );
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-12 pb-12 font-sans">
       {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-        <div className="space-y-1">
-          <h1 className="text-3xl font-black tracking-tight text-zinc-900 dark:text-white">Saved Library</h1>
-          <p className="text-zinc-500 dark:text-zinc-400 font-medium">Access your bookmarked analysis and verified articles</p>
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+        <div>
+          <p className="text-[10px] font-black text-indigo-600 dark:text-indigo-400 uppercase tracking-[0.3em] mb-4">Saved Content</p>
+          <h1 className="text-4xl lg:text-5xl font-black text-slate-900 dark:text-white tracking-tighter leading-none">
+            Neural <span className="text-gradient">Library</span>
+          </h1>
+          <p className="text-sm text-slate-500 dark:text-zinc-500 font-bold mt-4">Access your bookmarked analysis and verified articles.</p>
         </div>
         
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-4">
           <div className="relative group flex-1 md:flex-none">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400 group-focus-within:text-indigo-600 transition-colors" />
+            <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-indigo-600 transition-colors" />
             <input 
               type="text"
-              placeholder="Search library..."
+              placeholder="Filter archives..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-11 pr-4 py-3 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl focus:ring-2 focus:ring-indigo-600 outline-none transition-all w-full md:w-72 font-bold shadow-sm"
+              className="pl-12 pr-6 py-4 bg-white dark:bg-zinc-950 border border-slate-200 dark:border-zinc-900 rounded-2xl focus:ring-8 focus:ring-indigo-500/5 focus:border-indigo-500 outline-none transition-all w-full md:w-80 font-bold text-slate-900 dark:text-white shadow-sm"
             />
           </div>
-          <button className="p-3 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors shadow-sm">
-            <Filter className="w-5 h-5 text-zinc-600 dark:text-zinc-400" />
+          <button className="p-4 bg-white dark:bg-zinc-950 border border-slate-200 dark:border-zinc-900 rounded-2xl hover:bg-slate-50 dark:hover:bg-zinc-900 transition-all shadow-sm">
+            <Filter className="w-5 h-5 text-slate-600 dark:text-zinc-400" />
           </button>
         </div>
       </div>
 
       {loading ? (
-        <div className="py-32 flex flex-col items-center justify-center space-y-4">
-          <Loader2 className="w-10 h-10 text-indigo-600 animate-spin" />
-          <p className="text-zinc-500 font-black animate-pulse">Opening your vaults...</p>
+        <div className="py-32 flex flex-col items-center justify-center space-y-6">
+          <div className="p-4 bg-indigo-600 rounded-[2rem] shadow-2xl shadow-indigo-600/30 animate-glow">
+            <Loader2 className="w-10 h-10 text-white animate-spin" />
+          </div>
+          <p className="text-[11px] font-black text-slate-400 dark:text-zinc-600 uppercase tracking-[0.2em] animate-pulse">Opening your vaults...</p>
         </div>
       ) : error ? (
-        <div className="p-12 bg-rose-50 dark:bg-rose-950/20 border border-rose-100 dark:border-rose-900/30 rounded-[2.5rem] text-center space-y-4">
-          <AlertCircle className="w-12 h-12 text-rose-500 mx-auto" />
-          <h3 className="text-xl font-black text-rose-900 dark:text-rose-100">{error}</h3>
+        <div className="p-16 bg-rose-500/5 border border-rose-500/10 rounded-[3rem] text-center space-y-6">
+          <AlertCircle className="w-16 h-16 text-rose-500 mx-auto" />
+          <h3 className="text-2xl font-black text-slate-900 dark:text-white">{error}</h3>
           <button 
             onClick={fetchSavedArticles}
-            className="px-6 py-2 bg-rose-600 text-white font-black rounded-xl hover:bg-rose-700 transition-all"
+            className="px-10 py-4 bg-rose-600 text-white font-black rounded-2xl hover:bg-rose-700 transition-all shadow-xl shadow-rose-600/20 text-[11px] uppercase tracking-widest"
           >
-            Retry
+            Retry Access
           </button>
         </div>
       ) : filteredArticles.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           <AnimatePresence>
             {filteredArticles.map((article) => (
               <motion.div
@@ -127,32 +133,32 @@ export default function LibraryPage() {
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.9 }}
-                className="group bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-[2rem] overflow-hidden shadow-sm hover:shadow-xl hover:shadow-indigo-500/5 transition-all duration-500 flex flex-col"
+                className="group bg-white dark:bg-zinc-950 border border-slate-200 dark:border-zinc-900 rounded-[2.5rem] overflow-hidden shadow-sm hover:border-indigo-500/30 transition-all duration-500 flex flex-col card-hover-effect"
               >
-                <div className="p-8 flex-1 space-y-4">
+                <div className="p-10 flex-1 space-y-6">
                   <div className="flex items-start justify-between">
-                    <div className="px-3 py-1 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 text-[10px] font-black uppercase tracking-widest rounded-lg">
+                    <div className="px-4 py-1.5 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 text-[10px] font-black uppercase tracking-widest rounded-xl border border-indigo-100 dark:border-indigo-800/50">
                       {article.article_source || 'AI Analysis'}
                     </div>
                     <button 
                       onClick={() => handleDelete(article.id)}
-                      className="p-2 text-zinc-300 hover:text-rose-500 transition-colors"
+                      className="p-2 text-slate-300 hover:text-rose-500 transition-colors active:scale-90"
                     >
                       <Trash2 className="w-5 h-5" />
                     </button>
                   </div>
                   
-                  <h3 className="text-xl font-black text-zinc-900 dark:text-white leading-tight group-hover:text-indigo-600 transition-colors">
+                  <h3 className="text-2xl font-black text-slate-900 dark:text-white leading-tight tracking-tight group-hover:text-indigo-600 transition-colors">
                     {article.article_title}
                   </h3>
                   
-                  <p className="text-sm font-medium text-zinc-500 dark:text-zinc-400 line-clamp-3 leading-relaxed">
+                  <p className="text-sm font-bold text-slate-500 dark:text-zinc-500 line-clamp-4 leading-relaxed opacity-80">
                     {article.article_content}
                   </p>
                 </div>
 
-                <div className="px-8 py-6 bg-zinc-50/50 dark:bg-zinc-800/30 border-t border-zinc-100 dark:border-zinc-800 flex items-center justify-between">
-                  <div className="flex items-center gap-2 text-xs font-bold text-zinc-400">
+                <div className="px-10 py-8 bg-slate-50/50 dark:bg-zinc-900/50 border-t border-slate-100 dark:border-zinc-900 flex items-center justify-between">
+                  <div className="flex items-center gap-3 text-[10px] font-black text-slate-400 dark:text-zinc-600 uppercase tracking-widest">
                     <Clock className="w-4 h-4" />
                     {new Date(article.saved_at).toLocaleDateString()}
                   </div>
@@ -161,7 +167,7 @@ export default function LibraryPage() {
                       href={article.article_url} 
                       target="_blank" 
                       rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 text-xs font-black text-indigo-600 hover:text-indigo-700 transition-colors"
+                      className="inline-flex items-center gap-2 text-[10px] font-black text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 transition-colors uppercase tracking-widest"
                     >
                       View Source
                       <ArrowUpRight className="w-4 h-4" />
@@ -173,18 +179,24 @@ export default function LibraryPage() {
           </AnimatePresence>
         </div>
       ) : (
-        <div className="py-32 flex flex-col items-center justify-center text-center px-6 bg-white dark:bg-zinc-900 rounded-[3rem] border border-zinc-100 dark:border-zinc-800 shadow-sm">
-          <div className="w-24 h-24 bg-zinc-50 dark:bg-zinc-800 rounded-full flex items-center justify-center mb-8">
-            <Bookmark className="w-10 h-10 text-zinc-300" />
+        <div className="py-40 flex flex-col items-center justify-center text-center px-10 bg-white dark:bg-zinc-950 rounded-[4rem] border border-slate-100 dark:border-zinc-900 shadow-sm relative overflow-hidden">
+          <div className="absolute inset-0 bg-indigo-600/5 blur-[100px] rounded-full"></div>
+          <div className="w-24 h-24 bg-slate-50 dark:bg-zinc-900 rounded-[2rem] flex items-center justify-center mb-10 shadow-inner relative z-10">
+            <Bookmark className="w-10 h-10 text-slate-300 dark:text-zinc-700" />
           </div>
-          <h3 className="text-2xl font-black text-zinc-900 dark:text-white mb-2">Your library is empty</h3>
-          <p className="text-zinc-500 font-medium max-w-sm mx-auto mb-10 text-lg">
-            {searchQuery ? `No articles matching "${searchQuery}"` : "You haven't saved any articles yet. Verified news will appear here."}
-          </p>
+          <div className="relative z-10 space-y-4">
+            <h3 className="text-3xl font-black text-slate-900 dark:text-white tracking-tight">Your library is empty</h3>
+            <p className="text-slate-500 dark:text-zinc-500 font-bold max-w-sm mx-auto text-lg leading-relaxed">
+              {searchQuery ? `No articles matching "${searchQuery}"` : "You haven't saved any articles yet. Verified news will appear here."}
+            </p>
+          </div>
           {!searchQuery && (
-            <button className="px-10 py-4 bg-indigo-600 text-white font-black rounded-2xl shadow-lg shadow-indigo-500/25 hover:bg-indigo-700 transition-all hover:-translate-y-1">
-              Browse Latest News
-            </button>
+            <Link 
+              href="/dashboard/verify"
+              className="mt-12 px-12 py-5 bg-indigo-600 text-white font-black rounded-2xl shadow-2xl shadow-indigo-600/30 hover:bg-indigo-700 transition-all hover:-translate-y-1 active:scale-95 text-[11px] uppercase tracking-widest relative z-10"
+            >
+              Analyze News Now
+            </Link>
           )}
         </div>
       )}
