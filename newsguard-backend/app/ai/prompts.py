@@ -3,10 +3,15 @@ from typing import List, Dict, Any
 def extract_queries_prompt(text: str, count: int = 3) -> str:
     return f"""
     You are a professional news analyst.
-    Please extract {count} concise headlines or search queries from the following news article.
-    Make sure each item is clear and concise, focusing on the main facts, events, places, people, organizations, and date-time.
+    Please extract {count} diverse and effective search queries from the following news article text to verify its accuracy.
     
-    Article:
+    Guidelines:
+    1. One query should be a concise headline summarizing the main claim.
+    2. One query should target specific entities (people, places, organizations) and events mentioned.
+    3. One query should be optimized for finding fact-checking reports (e.g., "fact check [claim]", "[event] debunked").
+    4. Focus on unique identifiers like dates, names, and specific numbers.
+    
+    Article Text:
     {text}
     
     Respond strictly with a JSON object:

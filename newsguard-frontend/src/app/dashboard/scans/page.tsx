@@ -47,7 +47,7 @@ export default function RecentScansPage() {
         if (filters.minScore > 0) params.min_score = filters.minScore;
 
         const response = await axios.get(
-          `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1'}/dashboard/history`,
+          `${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000/api/v1'}/dashboard/history`,
           {
             headers: { Authorization: `Bearer ${token}` },
             params

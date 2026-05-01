@@ -16,7 +16,6 @@ import {
   Bell
 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
-import AIAssistant from '@/components/AIAssistant';
 import ThemeToggle from '@/components/ThemeToggle';
 
 const menuItems = [
@@ -64,7 +63,7 @@ export default function DashboardLayout({
             <div className="p-2 bg-indigo-600 rounded-xl group-hover:rotate-12 transition-transform shadow-lg shadow-indigo-600/20">
               <Shield className="w-6 h-6 text-white" />
             </div>
-            <span className="text-xl font-bold text-slate-900 dark:text-white tracking-tight">NewsGuard</span>
+            <span className="text-xl font-heading font-black text-slate-900 dark:text-white tracking-tight">NewsGuard</span>
           </Link>
           
           <nav className="flex-1 space-y-1.5">
@@ -76,7 +75,7 @@ export default function DashboardLayout({
                   key={item.href}
                   href={item.href}
                   className={`
-                    flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all
+                    flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-heading font-bold transition-all
                     ${isActive 
                       ? 'bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400' 
                       : 'text-slate-500 dark:text-zinc-400 hover:bg-slate-50 dark:hover:bg-zinc-800 hover:text-slate-900 dark:hover:text-white'}
@@ -91,17 +90,17 @@ export default function DashboardLayout({
 
           <div className="pt-6 border-t border-slate-100 dark:border-zinc-800 space-y-4">
             <div className="flex items-center gap-3 px-4 py-3 bg-slate-50 dark:bg-zinc-800/50 rounded-2xl">
-              <div className="w-10 h-10 rounded-xl bg-indigo-100 dark:bg-indigo-900/50 flex items-center justify-center text-indigo-600 dark:text-indigo-400 font-bold">
+              <div className="w-10 h-10 rounded-xl bg-indigo-100 dark:bg-indigo-900/50 flex items-center justify-center text-indigo-600 dark:text-indigo-400 font-heading font-black">
                 {user?.username?.charAt(0).toUpperCase() || 'U'}
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-bold text-slate-900 dark:text-white truncate">{user?.username || 'User'}</p>
-                <p className="text-xs font-medium text-slate-500 truncate capitalize">{user?.role || 'member'}</p>
+                <p className="text-sm font-heading font-black text-slate-900 dark:text-white truncate">{user?.username || 'User'}</p>
+                <p className="text-xs font-heading font-bold text-slate-500 truncate capitalize">{user?.role || 'member'}</p>
               </div>
             </div>
             <button
               onClick={logout}
-              className="flex items-center gap-3 w-full px-4 py-3 rounded-xl text-sm font-bold text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/30 transition-all"
+              className="flex items-center gap-3 w-full px-4 py-3 rounded-xl text-sm font-heading font-black text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/30 transition-all"
             >
               <LogOut className="w-5 h-5" />
               Sign Out
@@ -121,7 +120,7 @@ export default function DashboardLayout({
             >
               <Menu className="w-6 h-6 text-slate-600" />
             </button>
-            <h1 className="text-lg font-bold text-slate-900 dark:text-white capitalize">
+            <h1 className="text-lg font-heading font-black text-slate-900 dark:text-white capitalize">
               {pathname.split('/').pop() || 'Overview'}
             </h1>
           </div>
@@ -134,7 +133,7 @@ export default function DashboardLayout({
             </button>
             <div className="h-8 w-[1px] bg-slate-200 dark:border-zinc-800 hidden sm:block"></div>
             <div className="hidden sm:flex items-center gap-3 pl-2">
-              <span className="text-sm font-bold text-slate-700 dark:text-zinc-300">{user?.username}</span>
+              <span className="text-sm font-heading font-black text-slate-700 dark:text-zinc-300">{user?.username}</span>
             </div>
           </div>
         </header>
@@ -143,7 +142,6 @@ export default function DashboardLayout({
           <div className="max-w-6xl mx-auto">
             {children}
           </div>
-          <AIAssistant initialMessage="Hello! I'm your NewsGuard assistant. How can I help you analyze the news today?" />
         </main>
       </div>
     </div>

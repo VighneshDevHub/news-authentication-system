@@ -58,7 +58,10 @@ async def get_analysis(
         "id": analysis.id,
         "score": analysis.authenticity_score,
         "verdict": analysis.verdict,
+        "category": analysis.category,
         "text": analysis.original_text,
         "result": analysis.details,
+        "bias": analysis.bias_details,
+        "related_articles": analysis.related_articles,
         "created_at": analysis.created_at
     }

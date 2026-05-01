@@ -5,7 +5,7 @@ Run this once before starting the server:
 """
 import asyncio
 from app.db.base import Base
-from app.db.session import engine, SessionLocal
+from app.db.session import engine, AsyncSessionLocal
 from app.models.user import User
 from app.core import security
 from sqlalchemy.future import select
@@ -19,7 +19,7 @@ async def init_db():
         await conn.run_sync(Base.metadata.create_all)
     
     print("Seeding initial data...")
-    async with SessionLocal() as db:
+    async with AsyncSessionLocal() as db:
         # Check if any user exists
         result = await db.execute(select(User))
         if not result.scalars().first():

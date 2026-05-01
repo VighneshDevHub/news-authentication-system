@@ -73,8 +73,8 @@ export default function DashboardPage() {
           headers: { Authorization: `Bearer ${token}` }
         };
         const [statsRes, historyRes] = await Promise.all([
-          axios.get(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1'}/dashboard/stats?days=${days}`, config),
-          axios.get(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1'}/dashboard/history`, config)
+          axios.get(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000/api/v1'}/dashboard/stats?days=${days}`, config),
+          axios.get(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000/api/v1'}/dashboard/history`, config)
         ]);
         setStats(statsRes.data);
         setHistory(historyRes.data.verification_history || []);
@@ -116,12 +116,12 @@ export default function DashboardPage() {
       {/* Welcome Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h2 className="text-3xl font-bold text-slate-900 dark:text-white">Dashboard</h2>
+          <h2 className="text-3xl font-heading font-bold text-slate-900 dark:text-white">Dashboard</h2>
           <p className="text-slate-500 dark:text-zinc-400 font-medium">Welcome back, {user?.username}. Here's what's happening today.</p>
         </div>
         <Link 
           href="/dashboard/verify"
-          className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-indigo-600 text-white font-bold rounded-xl hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-600/20 active:scale-95"
+          className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-indigo-600 text-white font-heading font-bold rounded-xl hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-600/20 active:scale-95"
         >
           <Search className="w-5 h-5" />
           New Verification
@@ -147,8 +147,8 @@ export default function DashboardPage() {
               <stat.icon className="w-7 h-7" />
             </div>
             <div>
-              <p className="text-sm font-bold text-slate-500 dark:text-zinc-500 uppercase tracking-wider">{stat.label}</p>
-              <p className="text-2xl font-bold text-slate-900 dark:text-white">{stat.value}</p>
+              <p className="text-sm font-heading font-bold text-slate-500 dark:text-zinc-500 uppercase tracking-wider">{stat.label}</p>
+              <p className="text-2xl font-heading font-bold text-slate-900 dark:text-white">{stat.value}</p>
             </div>
           </motion.div>
         ))}
@@ -162,14 +162,14 @@ export default function DashboardPage() {
           className="lg:col-span-2 p-8 bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-[2rem]"
         >
           <div className="flex items-center justify-between mb-8">
-            <h3 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
+            <h3 className="text-lg font-heading font-bold text-slate-900 dark:text-white flex items-center gap-2">
               <TrendingUp className="w-5 h-5 text-indigo-500" />
               Verification Activity
             </h3>
             <select 
               value={days}
               onChange={(e) => setDays(Number(e.target.value))}
-              className="bg-slate-50 dark:bg-zinc-800 border-none rounded-lg text-xs font-bold px-3 py-2 outline-none cursor-pointer"
+              className="bg-slate-50 dark:bg-zinc-800 border-none rounded-lg text-xs font-heading font-bold px-3 py-2 outline-none cursor-pointer"
             >
               <option value={7}>Last 7 Days</option>
               <option value={30}>Last 30 Days</option>

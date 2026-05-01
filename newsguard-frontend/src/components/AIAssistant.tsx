@@ -12,7 +12,10 @@ import {
   RefreshCcw,
   Maximize2,
   Minimize2,
-  BarChart3
+  BarChart3,
+  Shield,
+  Zap,
+  Info
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import axios from 'axios';
@@ -24,10 +27,7 @@ import {
   YAxis, 
   CartesianGrid, 
   Tooltip, 
-  ResponsiveContainer,
-  PieChart,
-  Pie,
-  Cell
+  ResponsiveContainer
 } from 'recharts';
 
 interface Message {
@@ -35,8 +35,6 @@ interface Message {
   content: string;
   reportData?: any;
 }
-
-const COLORS = ['#4f46e5', '#d946ef', '#06b6d4', '#10b981'];
 
 interface AIAssistantProps {
   context?: string;
@@ -61,7 +59,10 @@ export default function AIAssistant({ context, initialMessage, analysisId }: AIA
 
   useEffect(() => {
     if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+      scrollRef.current.scrollTo({
+        top: scrollRef.current.scrollHeight,
+        behavior: 'smooth'
+      });
     }
   }, [messages, loading]);
 
@@ -76,7 +77,7 @@ export default function AIAssistant({ context, initialMessage, analysisId }: AIA
     try {
       const token = localStorage.getItem('token');
       const res = await axios.post(
-        `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1'}/chat`,
+        `${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000/api/v1'}/chat`,
         {
           message: userMsg,
           analysis_id: analysisId,
@@ -113,192 +114,275 @@ export default function AIAssistant({ context, initialMessage, analysisId }: AIA
 
   return (
     <>
-      {/* Floating Button */}
+      {/* Premium Floating Button */}
       {!isOpen && (
         <motion.button
-          initial={{ scale: 0, opacity: 0 }}
+          initial={{ scale: 0.8, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
           onClick={() => setIsOpen(true)}
-          className="fixed bottom-6 right-6 p-4 bg-indigo-600 text-white rounded-full shadow-2xl hover:bg-indigo-700 transition-all z-50 group"
+          className="fixed bottom-8 right-8 p-4 bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.2)] dark:shadow-[0_20px_50px_rgba(255,255,255,0.1)] z-50 flex items-center gap-3 border border-white/10 dark:border-zinc-200"
         >
-          <MessageSquare className="w-6 h-6 group-hover:scale-110 transition-transform" />
-          <span className="absolute -top-1 -right-1 flex h-3 w-3">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
-            <span className="relative inline-flex rounded-full h-3 w-3 bg-indigo-500"></span>
-          </span>
+          <div className="relative">
+            <MessageSquare className="w-6 h-6" />
+            <span className="absolute -top-1 -right-1 flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-indigo-500"></span>
+            </span>
+          </div>
+          <span className="font-bold text-sm tracking-tight">Chat with Assistant</span>
         </motion.button>
       )}
 
-      {/* Chat Window */}
+      {/* Modern SaaS Chat Window */}
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            initial={{ opacity: 0, y: 100, scale: 0.9 }}
+            initial={{ opacity: 0, y: 40, scale: 0.95, filter: 'blur(10px)' }}
             animate={{ 
               opacity: 1, 
               y: 0, 
               scale: 1,
-              width: isMaximized ? 'calc(100vw - 48px)' : '400px',
-              height: isMaximized ? 'calc(100vh - 48px)' : '600px',
-              maxWidth: isMaximized ? '1200px' : '400px',
+              filter: 'blur(0px)',
+              width: isMaximized ? 'calc(100vw - 64px)' : '420px',
+              height: isMaximized ? 'calc(100vh - 64px)' : '680px',
+              maxWidth: isMaximized ? '1200px' : '420px',
             }}
-            exit={{ opacity: 0, y: 100, scale: 0.9 }}
-            className={`fixed bottom-6 right-6 bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-3xl shadow-2xl z-50 flex flex-col overflow-hidden transition-all duration-300`}
+            exit={{ opacity: 0, y: 40, scale: 0.95, filter: 'blur(10px)' }}
+            className="fixed bottom-8 right-8 bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-[2rem] shadow-[0_30px_100px_rgba(0,0,0,0.15)] dark:shadow-none z-50 flex flex-col overflow-hidden transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)]"
           >
-            {/* Header */}
-            <div className="p-4 border-b border-zinc-200 dark:border-zinc-800 flex items-center justify-between bg-zinc-50 dark:bg-zinc-900/50">
-              <div className="flex items-center gap-3">
-                <div className="p-2 bg-indigo-600 rounded-xl">
-                  <Bot className="w-5 h-5 text-white" />
+            {/* Elegant Header */}
+            <div className="px-6 py-5 border-b border-zinc-100 dark:border-zinc-900 flex items-center justify-between bg-white/80 dark:bg-zinc-950/80 backdrop-blur-xl sticky top-0 z-10">
+              <div className="flex items-center gap-4">
+                <div className="relative">
+                  <div className="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center shadow-lg shadow-indigo-500/20">
+                    <Bot className="w-6 h-6 text-white" />
+                  </div>
+                  <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-emerald-500 border-2 border-white dark:border-zinc-950 rounded-full"></div>
                 </div>
                 <div>
-                  <h3 className="text-sm font-black text-zinc-900 dark:text-white">NewsGuard AI</h3>
-                  <div className="flex items-center gap-1.5">
-                    <span className="flex h-1.5 w-1.5 rounded-full bg-emerald-500"></span>
-                    <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider">Assistant Active</span>
-                  </div>
+                  <h3 className="text-sm font-black text-zinc-900 dark:text-white flex items-center gap-1.5">
+                    NewsGuard AI
+                    <span className="px-1.5 py-0.5 bg-indigo-50 dark:bg-indigo-900/30 text-[9px] text-indigo-600 dark:text-indigo-400 rounded-md uppercase tracking-tighter">Pro</span>
+                  </h3>
+                  <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest flex items-center gap-1">
+                    Neural Assistant
+                    <span className="w-1 h-1 rounded-full bg-zinc-300 dark:bg-zinc-700"></span>
+                    Online
+                  </p>
                 </div>
               </div>
+              
               <div className="flex items-center gap-1">
                 <button 
                   onClick={() => setIsMaximized(!isMaximized)}
-                  className="p-2 text-zinc-500 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-200 dark:hover:bg-zinc-800 rounded-lg transition-colors"
+                  className="p-2 text-zinc-400 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-900 rounded-xl transition-all"
                 >
                   {isMaximized ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
                 </button>
                 <button 
                   onClick={clearHistory}
-                  className="p-2 text-zinc-500 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-200 dark:hover:bg-zinc-800 rounded-lg transition-colors"
-                  title="Clear history"
+                  className="p-2 text-zinc-400 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-900 rounded-xl transition-all"
                 >
                   <RefreshCcw className="w-4 h-4" />
                 </button>
+                <div className="w-[1px] h-4 bg-zinc-200 dark:bg-zinc-800 mx-1"></div>
                 <button 
                   onClick={() => setIsOpen(false)}
-                  className="p-2 text-zinc-500 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/30 rounded-lg transition-colors"
+                  className="p-2 text-zinc-400 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/30 rounded-xl transition-all"
                 >
                   <X className="w-4 h-4" />
                 </button>
               </div>
             </div>
 
-            {/* Messages */}
+            {/* Message Area */}
             <div 
               ref={scrollRef}
-              className="flex-1 overflow-y-auto p-4 space-y-4 custom-scrollbar"
+              className="flex-1 overflow-y-auto p-6 space-y-6 scroll-smooth custom-scrollbar bg-zinc-50/50 dark:bg-zinc-950/50"
             >
-              {messages.length === 0 && (
-                <div className="flex flex-col items-center justify-center h-full text-center space-y-4 px-6">
-                  <div className="p-4 bg-indigo-100 dark:bg-indigo-900/20 rounded-full">
-                    <Sparkles className="w-8 h-8 text-indigo-600" />
-                  </div>
-                  <div className="space-y-1">
-                    <p className="font-black text-zinc-900 dark:text-white">How can I help you today?</p>
-                    <p className="text-sm text-zinc-500 font-medium">Ask about news trends, fact-checking details, or media bias insights.</p>
-                  </div>
-                </div>
-              )}
-              {messages.map((m, i) => (
-                <div 
-                  key={i} 
-                  className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}
-                >
-                  <div className={`flex gap-3 max-w-[85%] ${m.role === 'user' ? 'flex-row-reverse' : 'flex-row'}`}>
-                    <div className={`flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center ${
-                      m.role === 'assistant' ? 'bg-indigo-600 text-white' : 'bg-zinc-200 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400'
-                    }`}>
-                      {m.role === 'assistant' ? <Bot className="w-5 h-5" /> : <UserIcon className="w-5 h-5" />}
+              <AnimatePresence initial={false}>
+                {messages.length === 0 ? (
+                  <motion.div 
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    className="flex flex-col items-center justify-center h-full text-center space-y-6 px-4"
+                  >
+                    <div className="relative">
+                      <div className="w-20 h-20 bg-indigo-50 dark:bg-indigo-900/10 rounded-3xl flex items-center justify-center border border-indigo-100 dark:border-indigo-900/30">
+                        <Sparkles className="w-10 h-10 text-indigo-600" />
+                      </div>
+                      <motion.div 
+                        animate={{ rotate: 360 }}
+                        transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
+                        className="absolute -top-2 -right-2 w-6 h-6 bg-white dark:bg-zinc-900 rounded-full flex items-center justify-center shadow-md border border-zinc-100 dark:border-zinc-800"
+                      >
+                        <Zap className="w-3 h-3 text-amber-500 fill-amber-500" />
+                      </motion.div>
                     </div>
-                    <div className={`p-3 rounded-2xl text-sm font-medium leading-relaxed ${
-                      m.role === 'user' 
-                        ? 'bg-indigo-600 text-white rounded-tr-none shadow-md' 
-                        : 'bg-zinc-100 dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 rounded-tl-none border border-zinc-200 dark:border-zinc-800'
-                    }`}>
-                      <div className="whitespace-pre-wrap">{m.content}</div>
-                      
-                      {m.reportData && (
-                        <div className="mt-4 pt-4 border-t border-zinc-200 dark:border-zinc-700 space-y-4">
-                          <div className="flex items-center gap-2 text-indigo-600 dark:text-indigo-400">
-                            <BarChart3 className="w-4 h-4" />
-                            <span className="text-xs uppercase tracking-wider font-black">Analytical Report</span>
-                          </div>
+                    <div className="space-y-2">
+                      <h4 className="text-lg font-black text-zinc-900 dark:text-white tracking-tight">Intelligent Analysis Chat</h4>
+                      <p className="text-sm text-zinc-500 font-medium max-w-[240px] leading-relaxed">
+                        I have full context of this report. Ask me about bias patterns, source reliability, or specific claims.
+                      </p>
+                    </div>
+                    <div className="flex flex-wrap justify-center gap-2 max-w-[280px]">
+                      {['Analyze bias', 'Fact-check sources', 'Summarize key points'].map((hint) => (
+                        <button 
+                          key={hint}
+                          onClick={() => setInput(hint)}
+                          className="px-3 py-1.5 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg text-[10px] font-black uppercase tracking-wider text-zinc-600 hover:border-indigo-500 transition-colors"
+                        >
+                          {hint}
+                        </button>
+                      ))}
+                    </div>
+                  </motion.div>
+                ) : (
+                  messages.map((m, i) => (
+                    <motion.div 
+                      key={i}
+                      initial={{ opacity: 0, y: 10, scale: 0.98 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}
+                    >
+                      <div className={`flex gap-3 max-w-[90%] ${m.role === 'user' ? 'flex-row-reverse' : 'flex-row'}`}>
+                        {/* Avatar */}
+                        <div className={`flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center shadow-sm ${
+                          m.role === 'assistant' 
+                            ? 'bg-zinc-900 dark:bg-white text-white dark:text-zinc-900' 
+                            : 'bg-indigo-600 text-white'
+                        }`}>
+                          {m.role === 'assistant' ? <Bot className="w-4 h-4" /> : <UserIcon className="w-4 h-4" />}
+                        </div>
+
+                        {/* Bubble */}
+                        <div className={`relative p-4 rounded-2xl text-sm font-medium leading-relaxed shadow-sm ${
+                          m.role === 'user' 
+                            ? 'bg-indigo-600 text-white rounded-tr-none' 
+                            : 'bg-white dark:bg-zinc-900 text-zinc-800 dark:text-zinc-200 rounded-tl-none border border-zinc-100 dark:border-zinc-800'
+                        }`}>
+                          <div className="whitespace-pre-wrap">{m.content}</div>
                           
-                          {m.reportData.source_reliability && (
-                            <div className="h-40 w-full bg-white dark:bg-zinc-900/50 rounded-2xl p-2">
-                              <ResponsiveContainer width="100%" height="100%">
-                                <BarChart data={m.reportData.source_reliability}>
-                                  <XAxis dataKey="source" hide />
-                                  <Tooltip 
-                                    contentStyle={{ 
-                                      backgroundColor: '#18181b', 
-                                      border: 'none', 
-                                      borderRadius: '12px',
-                                      color: '#fff',
-                                      fontSize: '10px'
-                                    }} 
-                                  />
-                                  <Bar dataKey="score" fill="#4f46e5" radius={[4, 4, 0, 0]} />
-                                </BarChart>
-                              </ResponsiveContainer>
+                          {/* Rich Report Data in Chat */}
+                          {m.reportData && (
+                            <div className="mt-4 pt-4 border-t border-zinc-100 dark:border-zinc-800 space-y-4">
+                              <div className="flex items-center gap-2 text-indigo-600 dark:text-indigo-400">
+                                <BarChart3 className="w-4 h-4" />
+                                <span className="text-[10px] uppercase tracking-widest font-black">Analytical Insight</span>
+                              </div>
+                              
+                              <div className="grid grid-cols-2 gap-3">
+                                <div className="bg-zinc-50 dark:bg-zinc-950 p-3 rounded-xl border border-zinc-100 dark:border-zinc-800">
+                                  <div className="text-[9px] text-zinc-400 uppercase font-black tracking-tighter mb-1">Reliability</div>
+                                  <div className="text-lg font-black text-zinc-900 dark:text-white">{m.reportData.credibility_score}%</div>
+                                </div>
+                                <div className="bg-zinc-50 dark:bg-zinc-950 p-3 rounded-xl border border-zinc-100 dark:border-zinc-800">
+                                  <div className="text-[9px] text-zinc-400 uppercase font-black tracking-tighter mb-1">Bias Risk</div>
+                                  <div className="text-lg font-black text-fuchsia-600">{m.reportData.bias_score}%</div>
+                                </div>
+                              </div>
+
+                              {m.reportData.source_reliability && (
+                                <div className="h-32 w-full bg-zinc-50 dark:bg-zinc-950 rounded-xl p-2 border border-zinc-100 dark:border-zinc-800">
+                                  <ResponsiveContainer width="100%" height="100%">
+                                    <BarChart data={m.reportData.source_reliability}>
+                                      <Tooltip 
+                                        contentStyle={{ 
+                                          backgroundColor: '#000', 
+                                          border: 'none', 
+                                          borderRadius: '8px',
+                                          color: '#fff',
+                                          fontSize: '9px',
+                                          fontWeight: 'bold'
+                                        }} 
+                                        cursor={{ fill: 'rgba(99, 102, 241, 0.1)' }}
+                                      />
+                                      <Bar dataKey="score" fill="#4f46e5" radius={[4, 4, 4, 4]} barSize={20} />
+                                    </BarChart>
+                                  </ResponsiveContainer>
+                                </div>
+                              )}
                             </div>
                           )}
-
-                          <div className="grid grid-cols-2 gap-2">
-                            <div className="bg-white dark:bg-zinc-900/50 p-3 rounded-2xl">
-                              <div className="text-[10px] text-zinc-500 uppercase font-black">Credibility</div>
-                              <div className="text-lg font-black text-indigo-600">{m.reportData.credibility_score}%</div>
-                            </div>
-                            <div className="bg-white dark:bg-zinc-900/50 p-3 rounded-2xl">
-                              <div className="text-[10px] text-zinc-500 uppercase font-black">Bias Level</div>
-                              <div className="text-lg font-black text-fuchsia-600">{m.reportData.bias_score}%</div>
-                            </div>
-                          </div>
                         </div>
-                      )}
+                      </div>
+                    </motion.div>
+                  ))
+                )}
+                {loading && (
+                  <motion.div 
+                    initial={{ opacity: 0, y: 5 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="flex justify-start"
+                  >
+                    <div className="flex gap-3">
+                      <div className="w-8 h-8 rounded-lg bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 flex items-center justify-center">
+                        <Bot className="w-4 h-4" />
+                      </div>
+                      <div className="p-4 bg-white dark:bg-zinc-900 rounded-2xl rounded-tl-none border border-zinc-100 dark:border-zinc-800 flex items-center gap-2">
+                        <div className="flex gap-1">
+                          <span className="w-1.5 h-1.5 bg-indigo-600 rounded-full animate-bounce [animation-delay:-0.3s]"></span>
+                          <span className="w-1.5 h-1.5 bg-indigo-600 rounded-full animate-bounce [animation-delay:-0.15s]"></span>
+                          <span className="w-1.5 h-1.5 bg-indigo-600 rounded-full animate-bounce"></span>
+                        </div>
+                        <span className="text-xs font-bold text-zinc-400 uppercase tracking-widest ml-2">Thinking</span>
+                      </div>
                     </div>
-                  </div>
-                </div>
-              ))}
-              {loading && (
-                <div className="flex justify-start">
-                  <div className="flex gap-3">
-                    <div className="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center">
-                      <Bot className="w-5 h-5 text-white" />
-                    </div>
-                    <div className="p-3 bg-zinc-100 dark:bg-zinc-900 rounded-2xl rounded-tl-none border border-zinc-200 dark:border-zinc-800">
-                      <Loader2 className="w-4 h-4 animate-spin text-indigo-600" />
-                    </div>
-                  </div>
-                </div>
-              )}
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
 
-            {/* Input */}
-            <div className="p-4 border-t border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950">
-              <div className="relative flex items-center">
+            {/* Premium Input */}
+            <div className="p-6 bg-white dark:bg-zinc-950 border-t border-zinc-100 dark:border-zinc-900">
+              <div className="relative flex items-center group">
                 <input
                   type="text"
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && handleSend()}
-                  placeholder="Ask anything..."
-                  className="w-full bg-zinc-100 dark:bg-zinc-900 border-none rounded-xl py-3 pl-4 pr-12 text-sm font-bold text-zinc-900 dark:text-white placeholder:text-zinc-500 focus:ring-2 focus:ring-indigo-600 transition-all"
+                  placeholder="Ask a question about this report..."
+                  className="w-full bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl py-4 pl-5 pr-14 text-sm font-bold text-zinc-900 dark:text-white placeholder:text-zinc-400 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all outline-none"
                 />
                 <button
                   onClick={handleSend}
                   disabled={!input.trim() || loading}
-                  className="absolute right-2 p-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-50 disabled:hover:bg-indigo-600 transition-colors shadow-lg shadow-indigo-500/20"
+                  className="absolute right-2 p-2.5 bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 rounded-xl hover:scale-105 disabled:opacity-30 disabled:scale-100 transition-all shadow-lg active:scale-95"
                 >
                   <Send className="w-4 h-4" />
                 </button>
               </div>
-              <p className="mt-2 text-[10px] text-center text-zinc-500 font-bold uppercase tracking-widest">
-                Powered by Advanced NewsGuard Logic
-              </p>
+              <div className="mt-3 flex items-center justify-center gap-2 text-[9px] font-black text-zinc-400 uppercase tracking-[0.2em]">
+                <Shield className="w-2.5 h-2.5" />
+                Secure Analysis Channel
+                <Info className="w-2.5 h-2.5 ml-1 opacity-50 cursor-help" />
+              </div>
             </div>
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Global CSS for scrollbar */}
+      <style jsx global>{`
+        .custom-scrollbar::-webkit-scrollbar {
+          width: 5px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+          background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+          background: #e2e8f0;
+          border-radius: 10px;
+        }
+        .dark .custom-scrollbar::-webkit-scrollbar-thumb {
+          background: #1e1e1e;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+          background: #cbd5e1;
+        }
+      `}</style>
     </>
   );
 }

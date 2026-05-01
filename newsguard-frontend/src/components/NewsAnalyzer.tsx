@@ -85,7 +85,7 @@ export default function NewsAnalyzer() {
     try {
       const token = getToken();
       const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1'}/analysis/`, 
+        `${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000/api/v1'}/analysis/`, 
         { text: text },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -105,7 +105,7 @@ export default function NewsAnalyzer() {
     try {
       const token = getToken();
       await axios.post(
-        `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1'}/saved/`,
+        `${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000/api/v1'}/saved/`,
         {
           article_title: text.slice(0, 50) + (text.length > 50 ? '...' : ''),
           article_content: text,
@@ -143,7 +143,7 @@ export default function NewsAnalyzer() {
             <Search className="w-5 h-5 text-white" />
           </div>
           <div>
-            <h2 className="text-xl font-black text-zinc-900 dark:text-white">New Verification</h2>
+            <h2 className="text-xl font-heading font-black text-zinc-900 dark:text-white">New Verification</h2>
             <p className="text-sm text-zinc-500 font-bold">Paste the news text or claim you want to analyze</p>
           </div>
         </div>
@@ -201,11 +201,11 @@ export default function NewsAnalyzer() {
               <div className="p-10 lg:p-12">
                 <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-10 mb-12">
                   <div className="flex items-center gap-6">
-                    <div className={`w-24 h-24 rounded-3xl flex items-center justify-center border-4 ${getScoreColor(result.result.authenticity_score)}`}>
+                    <div className={`w-24 h-24 rounded-3xl flex items-center justify-center border-4 font-heading ${getScoreColor(result.result.authenticity_score)}`}>
                       <span className="text-4xl font-black">{result.result.authenticity_score}%</span>
                     </div>
                     <div>
-                      <h3 className="text-3xl font-black text-zinc-900 dark:text-white mb-2">Authenticity Score</h3>
+                      <h3 className="text-3xl font-heading font-black text-zinc-900 dark:text-white mb-2">Authenticity Score</h3>
                       <div className="flex items-center gap-2">
                         {result.result.authenticity_score >= 80 ? (
                           <div className="flex items-center gap-1.5 px-3 py-1 bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 rounded-full text-xs font-black uppercase tracking-widest">
@@ -260,11 +260,11 @@ export default function NewsAnalyzer() {
 
                 {result.result.verdict_summary && (
                   <div className="mb-12 p-6 bg-zinc-50 dark:bg-zinc-950 rounded-3xl border border-zinc-100 dark:border-zinc-800">
-                    <h4 className="text-xs font-black text-zinc-400 uppercase tracking-widest mb-3 flex items-center gap-2">
+                    <h4 className="text-xs font-heading font-black text-zinc-400 uppercase tracking-widest mb-3 flex items-center gap-2">
                       <ShieldCheck className="w-4 h-4 text-indigo-600" />
                       Executive Verdict
                     </h4>
-                    <p className="text-xl font-bold text-zinc-800 dark:text-zinc-200 leading-relaxed">
+                    <p className="text-xl font-bold text-zinc-800 dark:text-zinc-200 leading-relaxed font-heading">
                       {result.result.verdict_summary}
                     </p>
                   </div>
@@ -273,7 +273,7 @@ export default function NewsAnalyzer() {
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
                   <div className="space-y-8">
                     <div>
-                      <h4 className="text-sm font-black text-zinc-400 uppercase tracking-widest mb-6 flex items-center gap-2">
+                      <h4 className="text-sm font-heading font-black text-zinc-400 uppercase tracking-widest mb-6 flex items-center gap-2">
                         <CheckCircle2 className="w-4 h-4 text-indigo-600" />
                         Key Findings
                       </h4>
@@ -384,8 +384,8 @@ export default function NewsAnalyzer() {
                       <div className="absolute top-0 right-0 p-4 opacity-20 group-hover:scale-110 transition-transform">
                         <Zap className="w-24 h-24" />
                       </div>
-                      <h4 className="text-xl font-black mb-2">Neural Insight</h4>
-                      <p className="text-indigo-100 font-bold leading-relaxed mb-6">
+                      <h4 className="text-xl font-heading font-black mb-2">Neural Insight</h4>
+                      <p className="text-indigo-100 font-bold leading-relaxed mb-6 font-heading">
                         Our model detected {(result.result.differences || []).length > 0 ? result.result.differences.length : 'no'} significant discrepancies in this report compared to verified historical data.
                       </p>
                       {(result.result.differences || []).length > 0 && (
@@ -440,6 +440,14 @@ export default function NewsAnalyzer() {
             <div className="mt-12">
               <AIAssistant 
                 analysisId={result.id} 
+                context={`
+                  Analysis Summary:
+                  - Score: ${result.result.authenticity_score}%
+                  - Verdict: ${result.result.verdict_summary}
+                  - Key Findings: ${result.result.key_findings.join(', ')}
+                  - Bias: ${result.bias.overall_bias_score}% (${result.bias.bias_direction})
+                  - Content Analyzed: ${text.slice(0, 1000)}
+                `}
                 initialMessage={`I've analyzed this article (Score: ${result.result.authenticity_score}%). Feel free to ask me anything about these findings!`}
               />
             </div>

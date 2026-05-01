@@ -56,7 +56,7 @@ export default function SettingsPage() {
       try {
         const token = getToken();
         const response = await axios.get(
-          `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1'}/auth/me`,
+          `${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000/api/v1'}/auth/me`,
           {
             headers: { Authorization: `Bearer ${token}` }
           }
@@ -96,7 +96,7 @@ export default function SettingsPage() {
       if (formData.password) payload.password = formData.password;
 
       const response = await axios.patch(
-        `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1'}/auth/me`,
+        `${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000/api/v1'}/auth/me`,
         payload,
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -120,7 +120,7 @@ export default function SettingsPage() {
     try {
       const token = getToken();
       const response = await axios.patch(
-        `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1'}/auth/me`,
+        `${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000/api/v1'}/auth/me`,
         { preferences: newPrefs },
         { headers: { Authorization: `Bearer ${token}` } }
       );

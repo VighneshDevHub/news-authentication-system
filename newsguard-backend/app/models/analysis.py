@@ -24,6 +24,10 @@ class AnalysisResult(Base):
     # Stores: key_findings, differences, supporting_evidence, score_breakdown
     details = Column(JSONB, nullable=False, default={})
     
+    # New columns for full context
+    bias_details = Column(JSONB, nullable=True, default={})
+    related_articles = Column(JSONB, nullable=True, default=[])
+    
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     
     # Relationships

@@ -1,6 +1,10 @@
 @import "tailwindcss";
 
 @theme {
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui;
+  --font-heading: var(--font-plus-jakarta), var(--font-inter), ui-sans-serif;
+  --font-mono: var(--font-mono), ui-monospace, SFMono-Regular;
+  
   --color-primary: #4f46e5; /* Indigo-600 */
   --color-primary-dark: #4338ca; /* Indigo-700 */
   --color-secondary: #64748b; /* Slate-500 */

@@ -42,7 +42,7 @@ export default function LibraryPage() {
     try {
       const token = getToken();
       const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1'}/saved/`,
+        `${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000/api/v1'}/saved/`,
         {
           headers: { Authorization: `Bearer ${token}` }
         }
@@ -59,7 +59,7 @@ export default function LibraryPage() {
     try {
       const token = getToken();
       await axios.delete(
-        `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1'}/saved/${id}`,
+        `${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000/api/v1'}/saved/${id}`,
         {
           headers: { Authorization: `Bearer ${token}` }
         }

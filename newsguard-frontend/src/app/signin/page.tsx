@@ -38,7 +38,7 @@ export default function SignInPage() {
       params.append('password', formData.password);
 
       const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1'}/auth/login`,
+        `${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000/api/v1'}/auth/login`,
         params,
         {
           headers: {

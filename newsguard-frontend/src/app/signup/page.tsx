@@ -24,7 +24,7 @@ export default function SignUpPage() {
 
     try {
       await axios.post(
-        `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1'}/auth/signup`,
+        `${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000/api/v1'}/auth/signup`,
         formData
       );
       router.push('/signin');
