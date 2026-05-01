@@ -40,9 +40,10 @@ export default function Navbar() {
           {/* Desktop Menu */}
           <div className="hidden md:flex items-center gap-10">
             <div className="flex items-center gap-8 text-[13px] font-black uppercase tracking-widest text-slate-500 dark:text-zinc-500">
-              <Link href="#features" className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">Features</Link>
-              <Link href="#pricing" className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">Pricing</Link>
-              <Link href="#" className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">Docs</Link>
+              <Link href="/#demo" className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">Demo</Link>
+              <Link href="/#pricing" className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">Pricing</Link>
+              <Link href="/about" className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">About</Link>
+              <Link href="/contact" className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">Contact</Link>
             </div>
             
             <div className="flex items-center gap-6 border-l border-slate-200 dark:border-zinc-800/50 pl-8">
@@ -88,8 +89,10 @@ export default function Navbar() {
       {isOpen && (
         <div className="md:hidden absolute top-full left-0 w-full bg-white dark:bg-zinc-950 border-b border-slate-200 dark:border-zinc-800 py-6 px-4 space-y-4 shadow-xl">
           <div className="flex flex-col gap-4 text-center">
-            <Link href="#features" className="text-lg font-semibold text-slate-600 dark:text-slate-400" onClick={() => setIsOpen(false)}>Features</Link>
-            <Link href="#pricing" className="text-lg font-semibold text-slate-600 dark:text-slate-400" onClick={() => setIsOpen(false)}>Pricing</Link>
+            <Link href="/#demo" className="text-lg font-semibold text-slate-600 dark:text-slate-400" onClick={() => setIsOpen(false)}>Demo</Link>
+            <Link href="/#pricing" className="text-lg font-semibold text-slate-600 dark:text-slate-400" onClick={() => setIsOpen(false)}>Pricing</Link>
+            <Link href="/about" className="text-lg font-semibold text-slate-600 dark:text-slate-400" onClick={() => setIsOpen(false)}>About</Link>
+            <Link href="/contact" className="text-lg font-semibold text-slate-600 dark:text-slate-400" onClick={() => setIsOpen(false)}>Contact</Link>
             {isAuthenticated ? (
               <Link 
                 href="/dashboard" 

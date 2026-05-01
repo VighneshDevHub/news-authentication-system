@@ -121,9 +121,9 @@ export default function NewsAnalyzer() {
   };
 
   const getScoreColor = (score: number) => {
-    if (score >= 80) return 'text-emerald-500 bg-emerald-500/10 border-emerald-500/20';
-    if (score >= 50) return 'text-amber-500 bg-amber-500/10 border-amber-500/20';
-    return 'text-rose-500 bg-rose-500/10 border-rose-500/20';
+    if (score >= 80) return 'text-emerald-600 dark:text-emerald-500 bg-emerald-50 dark:bg-emerald-500/10 border-emerald-200 dark:border-emerald-500/20';
+    if (score >= 50) return 'text-amber-600 dark:text-amber-500 bg-amber-50 dark:bg-amber-500/10 border-amber-200 dark:border-amber-500/20';
+    return 'text-rose-600 dark:text-rose-500 bg-rose-50 dark:bg-rose-500/10 border-rose-200 dark:border-rose-500/20';
   };
 
   const getScoreGlow = (score: number) => {

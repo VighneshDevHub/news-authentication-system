@@ -91,9 +91,9 @@ export default function DashboardPage() {
   }, [user, days]);
 
   const getScoreColor = (score: number) => {
-    if (score >= 80) return 'text-emerald-500 bg-emerald-50 dark:bg-emerald-500/10 border-emerald-100 dark:border-emerald-500/20';
-    if (score >= 50) return 'text-amber-500 bg-amber-50 dark:bg-amber-500/10 border-amber-100 dark:border-amber-500/20';
-    return 'text-rose-500 bg-rose-50 dark:bg-rose-500/10 border-rose-100 dark:border-rose-500/20';
+    if (score >= 80) return 'text-emerald-600 dark:text-emerald-500 bg-emerald-50 dark:bg-emerald-500/10 border-emerald-100 dark:border-emerald-500/20';
+    if (score >= 50) return 'text-amber-600 dark:text-amber-500 bg-amber-50 dark:bg-amber-500/10 border-amber-100 dark:border-amber-500/20';
+    return 'text-rose-600 dark:text-rose-500 bg-rose-50 dark:bg-rose-500/10 border-rose-100 dark:border-rose-500/20';
   };
 
   const getScoreIcon = (score: number) => {
@@ -137,10 +137,10 @@ export default function DashboardPage() {
       {/* Main Stats - Elevated Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {[
-          { label: 'Total Scans', value: stats?.verifications_count || 0, icon: Search, color: 'text-blue-500', bg: 'bg-blue-500/10' },
-          { label: 'Avg. Accuracy', value: `${stats?.average_score || 0}%`, icon: Activity, color: 'text-indigo-500', bg: 'bg-indigo-500/10' },
-          { label: 'Saved Articles', value: stats?.saved_articles_count || 0, icon: Bookmark, color: 'text-emerald-500', bg: 'bg-emerald-500/10' },
-          { label: 'Search Queries', value: stats?.search_queries_count || 0, icon: FileText, color: 'text-rose-500', bg: 'bg-rose-500/10' },
+          { label: 'Total Scans', value: stats?.verifications_count || 0, icon: Search, color: 'text-blue-600 dark:text-blue-500', bg: 'bg-blue-500/10' },
+          { label: 'Avg. Accuracy', value: `${stats?.average_score || 0}%`, icon: Activity, color: 'text-indigo-600 dark:text-indigo-500', bg: 'bg-indigo-500/10' },
+          { label: 'Saved Articles', value: stats?.saved_articles_count || 0, icon: Bookmark, color: 'text-emerald-600 dark:text-emerald-500', bg: 'bg-emerald-500/10' },
+          { label: 'Search Queries', value: stats?.search_queries_count || 0, icon: FileText, color: 'text-rose-600 dark:text-rose-500', bg: 'bg-rose-500/10' },
         ].map((stat, i) => (
           <motion.div 
             key={i}
