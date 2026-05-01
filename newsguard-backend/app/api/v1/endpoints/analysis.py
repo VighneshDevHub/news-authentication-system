@@ -1,6 +1,8 @@
 from fastapi import APIRouter, Depends, HTTPException
+from fastapi.responses import StreamingResponse
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.future import select
+import json
+import asyncio
 
 from app.db.session import get_db
 from app.schemas.analysis import AnalysisRequest, AnalysisResponse, BiasRequest, BiasResponse
@@ -31,6 +33,29 @@ async def analyze_article(
         url=request.url,
         user_id=current_user.id
     )
+
+@router.post("/stream")
+async def analyze_article_stream(
+    request: AnalysisRequest,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(deps.get_current_active_user)
+):
+    """Analyze a news article with a streaming response for real-time progress."""
+    if not request.text and not request.url:
+        raise HTTPException(status_code=400, detail="Either text or url is required")
+
+    async def event_generator():
+        service = AnalysisService(db, get_ai_provider())
+        async for update in service.analyze_article_stream(
+            text=request.text or "", 
+            url=request.url,
+            user_id=current_user.id
+        ):
+            yield f"data: {json.dumps(update)}\n\n"
+            # Small delay to ensure client can process events smoothly
+            await asyncio.sleep(0.1)
+
+    return StreamingResponse(event_generator(), media_type="text/event-stream")
 
 @router.post("/bias", response_model=BiasResponse)
 async def analyze_bias(

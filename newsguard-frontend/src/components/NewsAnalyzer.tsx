@@ -24,6 +24,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { getToken } from '@/utils/auth';
 import { cn } from '@/utils/cn';
 import AIAssistant from '@/components/AIAssistant';
+import ReasoningVisualization from '@/components/ReasoningVisualization';
 
 interface VerificationResult {
   id: number;
@@ -65,6 +66,7 @@ interface VerificationResult {
 export default function NewsAnalyzer() {
   const [text, setText] = useState('');
   const [loading, setLoading] = useState(false);
+  const [currentStep, setCurrentStep] = useState(0);
   const [result, setResult] = useState<VerificationResult | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isSaved, setIsSaved] = useState(false);
@@ -77,18 +79,55 @@ export default function NewsAnalyzer() {
     setError(null);
     setResult(null);
     setIsSaved(false);
+    setCurrentStep(0);
 
     try {
       const token = getToken();
-      const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000/api/v1'}/analysis/`, 
-        { text: text },
-        { headers: { Authorization: `Bearer ${token}` } }
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000/api/v1'}/analysis/stream`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({ text: text })
+        }
       );
-      setResult(response.data);
+
+      if (!response.ok) {
+        throw new Error('Failed to start analysis');
+      }
+
+      const reader = response.body?.getReader();
+      if (!reader) throw new Error('No response body');
+
+      const decoder = new TextDecoder();
+      let buffer = '';
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split('\n\n');
+        buffer = lines.pop() || '';
+
+        for (const line of lines) {
+          if (line.startsWith('data: ')) {
+            const data = JSON.parse(line.slice(6));
+            if (data.step !== undefined) {
+              setCurrentStep(data.step);
+            }
+            if (data.result) {
+              setResult(data.result);
+            }
+          }
+        }
+      }
     } catch (err: any) {
       console.error('API Error:', err);
-      setError(err.response?.data?.detail || 'Failed to analyze the news. Please check your connection and try again.');
+      setError(err.message || 'Failed to analyze the news. Please check your connection and try again.');
     } finally {
       setLoading(false);
     }
@@ -182,6 +221,17 @@ export default function NewsAnalyzer() {
       </motion.div>
 
       <AnimatePresence mode="wait">
+        {loading && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.95 }}
+            className="w-full"
+          >
+            <ReasoningVisualization currentStep={currentStep} isStreaming={true} />
+          </motion.div>
+        )}
+
         {error && (
           <motion.div 
             initial={{ opacity: 0, scale: 0.95 }}

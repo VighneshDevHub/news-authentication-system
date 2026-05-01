@@ -17,6 +17,99 @@ class AnalysisService:
         self.db = db
         self.llm = llm_provider
 
+    async def analyze_article_stream(self, text: str, user_id: int = None, url: Optional[str] = None):
+        # 0. Scraping (if URL provided)
+        if url and not text.strip():
+            yield {"step": 0, "message": "Scraping content from URL..."}
+            scraped = await ScraperService.fetch_multiple([url])
+            if scraped and scraped[0].get("content"):
+                text = scraped[0]["content"]
+            else:
+                text = url
+
+        # 1. Extract Keywords
+        yield {"step": 1, "message": "Extracting search queries..."}
+        queries = await self.llm.extract_search_queries(text, count=4)
+        if not queries:
+            queries = [text[:100]]
+
+        # 2. Search Google
+        yield {"step": 2, "message": "Searching global news sources..."}
+        search_urls = set()
+        diverse_urls = []
+        REPUTABLE_DOMAINS = [
+            'reuters.com', 'apnews.com', 'bbc.com', 'nytimes.com', 'wsj.com', 
+            'snopes.com', 'politifact.com', 'factcheck.org', 'fullfact.org',
+            'theguardian.com', 'aljazeera.com', 'npr.org', 'bloomberg.com'
+        ]
+
+        for q in queries:
+            urls = await SearchService.google_search(q, num_results=6)
+            sorted_urls = sorted(
+                urls, 
+                key=lambda u: any(domain in u.lower() for domain in REPUTABLE_DOMAINS), 
+                reverse=True
+            )
+            for u in sorted_urls:
+                if u not in diverse_urls:
+                    diverse_urls.append(u)
+            search_urls.update(urls)
+        
+        unique_urls = []
+        for q_idx in range(len(queries)):
+            for u in diverse_urls:
+                if any(domain in u.lower() for domain in REPUTABLE_DOMAINS) and u not in unique_urls:
+                    unique_urls.append(u)
+                    break
+        for u in diverse_urls:
+            if len(unique_urls) >= 10: break
+            if u not in unique_urls: unique_urls.append(u)
+        unique_urls = unique_urls[:10]
+
+        # 3. Scrape Content
+        yield {"step": 3, "message": "Cross-checking claims with sources..."}
+        verified_articles = await ScraperService.fetch_multiple(unique_urls)
+
+        # 4. Multi-Stage Verification
+        yield {"step": 4, "message": "Analyzing content integrity..."}
+        claims_data = await self.llm.extract_claims(text)
+        claims = claims_data.get("claims", [])
+        category = claims_data.get("category", "General")
+
+        yield {"step": 5, "message": "Calculating authenticity score..."}
+        verification_results = await self.llm.cross_reference(claims, verified_articles)
+        
+        yield {"step": 6, "message": "Detecting linguistic bias..."}
+        bias_result = await self.llm.detect_bias(text)
+
+        yield {"step": 7, "message": "Finalizing verification report..."}
+        analysis_result = await self.llm.get_final_verdict(text, verification_results, bias_result)
+
+        # 5. Save Result
+        db_result = await self.save_result(
+            text=text, 
+            analysis=analysis_result, 
+            user_id=user_id, 
+            category=category,
+            bias_details=bias_result,
+            related_articles=verified_articles
+        )
+
+        yield {
+            "step": 8,
+            "message": "Complete",
+            "result": {
+                "id": db_result.id,
+                "score": db_result.authenticity_score,
+                "category": category,
+                "result": analysis_result,
+                "bias": bias_result,
+                "key_points": queries,
+                "related_articles": verified_articles,
+                "relevance_score": analysis_result.get("relevance_score", 0)
+            }
+        }
+
     async def analyze_article(self, text: str, user_id: int = None, url: Optional[str] = None) -> Dict[str, Any]:
         # If URL provided, scrape it first to get the text
         if url and not text.strip():
