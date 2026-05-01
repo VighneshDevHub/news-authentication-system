@@ -1,12 +1,22 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Sun, Moon } from 'lucide-react';
 import { useTheme } from '@/context/ThemeContext';
 import { motion } from 'framer-motion';
 
 export default function ThemeToggle() {
   const { theme, toggleTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Render a placeholder with the same dimensions to avoid layout shift
+  if (!mounted) {
+    return <div className="w-9 h-9 rounded-xl bg-slate-100 dark:bg-zinc-800" />;
+  }
 
   return (
     <button
