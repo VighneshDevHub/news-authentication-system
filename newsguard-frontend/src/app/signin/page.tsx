@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Shield, User, Lock, ArrowRight, Loader2, AlertCircle } from 'lucide-react';
@@ -9,7 +9,7 @@ import axios from 'axios';
 import { useAuth } from '@/context/AuthContext';
 import { motion } from 'framer-motion';
 
-export default function SignInPage() {
+function SignInContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const redirect = searchParams.get('redirect');
@@ -157,5 +157,13 @@ export default function SignInPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function SignInPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-white dark:bg-zinc-950 flex items-center justify-center"><Loader2 className="w-10 h-10 animate-spin text-indigo-600" /></div>}>
+      <SignInContent />
+    </Suspense>
   );
 }
