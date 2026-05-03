@@ -48,16 +48,16 @@ class Settings(BaseSettings):
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 8 # 8 days
 
     # External APIs
-    GOOGLE_API_KEY: str = "AIzaSyB2nlYuSgnoKLBKC4aF2nfF2drE3ZWIMNk"
-    GOOGLE_CSE_ID: str = "15c198a8769a045ec"
+    GOOGLE_API_KEY: str | None = None
+    GOOGLE_CSE_ID: str | None = None
     
-    # Mail (from previous project; placeholders only)
+    # Mail
     MAIL_SERVER: str = "smtp.gmail.com"
     MAIL_PORT: int = 465
     MAIL_USE_TLS: bool = False
     MAIL_USE_SSL: bool = True
-    MAIL_USERNAME: str = "salunkhesantosh787@gmail.com"
-    MAIL_PASSWORD: str = "ohjq iqcn zrpt xpco"
+    MAIL_USERNAME: str | None = None
+    MAIL_PASSWORD: str | None = None
 
     model_config = SettingsConfigDict(case_sensitive=True, env_file=".env")
 
